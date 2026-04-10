@@ -1,6 +1,7 @@
 package org.example.view;
 
 import org.example.DataStorage;
+import org.example.GameController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,10 +16,10 @@ public class BoardView extends JPanel {
     private JPanel cardsPanel;
     private JPanel controlPanel;
 
-    private List<CardButton> cards;
+    private List<Card> cards;
     private GameController gameController;
 
-    public BoardView() {
+    public BoardView(Runnable onConfirm){
         rows = DataStorage.getInstance().getBoardHeight();
         cols = DataStorage.getInstance().getBoardWidth();
 
@@ -35,7 +36,7 @@ public class BoardView extends JPanel {
         cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
         cards = new ArrayList<>();
         for(int i=0; i<rows*cols; i++) {
-            CardButton card = new CardButton(gameController.getCardFront(i), gameController.getCardBack());
+            Card card = new Card(gameController.getCardFront(i), gameController.getCardBack());
             card.addActionListener(e -> handleCardClick(card));
             cards.add(card);
             cardsPanel.add(card);
@@ -53,7 +54,7 @@ public class BoardView extends JPanel {
         add(controlPanel, BorderLayout.SOUTH);
     }
 
-    private void handleCardClick(CardButton card) {
+    private void handleCardClick(Card card) {
         if(gameController.canFlip(card)) {
             card.flip();
             gameController.processMove(card);
@@ -71,25 +72,6 @@ public class BoardView extends JPanel {
         System.out.println("Special clicked");
     }
 
-    // --- Inner classes for example ---
-
-    private static class CardButton extends JButton {
-        private Icon front, back;
-        private boolean revealed = false;
-
-        public CardButton(Icon front, Icon back) {
-            super(back);
-            this.front = front;
-            this.back = back;
-        }
-
-        public void flip() {
-            if(!revealed) setIcon(front);
-            else setIcon(back);
-            revealed = !revealed;
-        }
-    }
-
     private static class StatsPanel extends JPanel {
         private JLabel scoreLabel;
 
@@ -103,34 +85,5 @@ public class BoardView extends JPanel {
         }
     }
 
-    // Stub for actual game logic
-    private static class GameController {
-        private int rows, cols;
-        private int score = 0;
 
-        public GameController(int rows, int cols) {
-            this.rows = rows;
-            this.cols = cols;
-        }
-
-        public boolean canFlip(CardButton card) {
-            return true; // TODO: implement rules
-        }
-
-        public void processMove(CardButton card) {
-            score++; // TODO: implement match checking, moves, etc.
-        }
-
-        public int getScore() {
-            return score;
-        }
-
-        public Icon getCardFront(int index) {
-            return UIManager.getIcon("OptionPane.informationIcon"); // placeholder
-        }
-
-        public Icon getCardBack() {
-            return UIManager.getIcon("OptionPane.warningIcon"); // placeholder
-        }
-    }
 }
