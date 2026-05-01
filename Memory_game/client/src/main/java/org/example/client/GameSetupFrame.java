@@ -40,6 +40,8 @@ public class GameSetupFrame extends JFrame{
 
     private void onBoardConfirm(CardLayout cl, JPanel main) {
         boardView = new BoardView(connection/*, () -> cl.show(main, "START")*/);
+        //TODO:Linia poniżej jest bardzo ważna (na żółto, żeby było widoczne
+        connection.setListener(boardView::handleServerMessage);
         main.add(boardView, "BOARD"); // add it dynamically
         cl.show(main, "BOARD");
 

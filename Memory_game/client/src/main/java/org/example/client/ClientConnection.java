@@ -40,6 +40,7 @@ public class ClientConnection {
             try {
                 String msg;
                 while ((msg = in.readLine()) != null) {
+                    System.out.println("SERVER → " + msg);
                     if (listener != null) {
                         listener.accept(msg);
                     }
