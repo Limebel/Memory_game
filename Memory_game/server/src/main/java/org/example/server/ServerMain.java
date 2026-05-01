@@ -4,8 +4,7 @@ import javax.swing.*;
 
 public class ServerMain {
     public static void main(String[] args) {
-        GameController controller = new GameController();
-        GameServer server = new GameServer(1234, controller);
+        GameServer server = new GameServer(1234);
         new Thread(() -> {
             try {
                 server.start();
