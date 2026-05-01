@@ -1,6 +1,7 @@
 package org.example.server;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.example.common.CardModel;
 import org.example.common.GameModel;
 import org.example.common.GameState;
@@ -11,10 +12,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 // Stub for actual game logic
+@Setter
 @Getter
 public class GameController {
     private GameModel game = new GameModel();
+    private int readyPlayers = 0;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private GameEventListener listener;
 
     public void handleConnect(PlayerModel player){
         if(game.getPlayers().get(0)==null){
@@ -35,11 +39,34 @@ public class GameController {
         initializeCards();
         game.setCurrentPlayer(0);
         game.setState(GameState.FIRST_CARD);
+
+        notifyInit();
+    }
+
+    private void notifyInit() {
+        if (listener != null) {
+            listener.onInit(game);
+        }
+    }
+
+    private void notifyStateUpdate() {
+        if (listener != null) {
+            listener.onStateChanged(game);
+        }
+    }
+
+    public synchronized void handleReady() {
+
+        readyPlayers++;
+
+        if (readyPlayers == 2) {
+            game.setState(GameState.FIRST_CARD);
+            notifyStateUpdate(); // start game
+        }
     }
 
     private void initializeCards(){
-
-        //for(int i;i<)
+        //TODO:
     }
 
     public boolean handleFlip(PlayerModel player, int index) {
@@ -88,24 +115,12 @@ public class GameController {
             PlayerModel player2 = game.getPlayers().get(1);
             if(player1.getScore()+player2.getScore() == (game.getCards().size()/2)){
                 game.setState(GameState.GAME_FINISHED);
-                //handleFinish();
+                // TODO:handleFinish();
             }
         }
         else{
             card1.setIfFlipped(false);
             card2.setIfFlipped(false);
         }
-    }
-
-/*    public void processMove(Card card) {
-         // TODO: implement match checking, moves, etc.
-    }*/
-
-    public Icon getCardFront(int index) {
-        return UIManager.getIcon("OptionPane.informationIcon"); // placeholder
-    }
-
-    public Icon getCardBack() {
-        return UIManager.getIcon("OptionPane.warningIcon"); // placeholder
     }
 }

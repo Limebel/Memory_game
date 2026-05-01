@@ -7,7 +7,7 @@ import javax.swing.*;
 public class ClientMain {
     public static void main(String[] args) {
         ClientConnection connection = new ClientConnection("localhost", 1234);
-        connection.send("Player_" + System.currentTimeMillis());
+        //connection.send("Player_" + System.currentTimeMillis());
 
         SwingUtilities.invokeLater(() -> {
             ColorManager.darkTheme();

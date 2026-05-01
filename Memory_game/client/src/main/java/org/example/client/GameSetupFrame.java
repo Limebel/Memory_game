@@ -1,6 +1,5 @@
 package org.example.client;
 
-//import org.example.server.GameController;
 import org.example.client.view.*;
 
 import javax.swing.*;
@@ -40,7 +39,7 @@ public class GameSetupFrame extends JFrame{
     }
 
     private void onBoardConfirm(CardLayout cl, JPanel main) {
-        boardView = new BoardView(connection, () -> cl.show(main, "START"));
+        boardView = new BoardView(connection/*, () -> cl.show(main, "START")*/);
         main.add(boardView, "BOARD"); // add it dynamically
         cl.show(main, "BOARD");
 
@@ -49,7 +48,7 @@ public class GameSetupFrame extends JFrame{
         int w = GameModel.getInstance().getBoardWidth();
         int h = GameModel.getInstance().getBoardHeight();*/
 
-        JOptionPane.showMessageDialog(this,
-                "Player: " + name + "\nOpponent: " + opName + "\nSize: " + w + "x" + h);
+        /*JOptionPane.showMessageDialog(this,
+                "Player: " + name + "\nOpponent: " + opName + "\nSize: " + w + "x" + h);*/
     }
 }

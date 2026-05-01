@@ -2,8 +2,6 @@ package org.example.server;
 
 import javax.swing.*;
 
-import org.example.view.ColorManager;
-
 public class ServerMain {
     public static void main(String[] args) {
         GameController controller = new GameController();

@@ -1,9 +1,14 @@
 package org.example.client;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.function.Consumer;
 
+@Setter
+@Getter
 public class ClientConnection {
 
     private Socket socket;
@@ -28,10 +33,6 @@ public class ClientConnection {
 
     public void send(String msg) {
         out.println(msg);
-    }
-
-    public void setListener(Consumer<String> listener) {
-        this.listener = listener;
     }
 
     private void startListening() {

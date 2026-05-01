@@ -18,6 +18,10 @@ public class ClientHandler implements Runnable{
         this.controller = controller;
     }
 
+    public void send(String msg) {
+        out.println(msg);
+    }
+
     @Override
     public void run() {
         try {
@@ -37,6 +41,9 @@ public class ClientHandler implements Runnable{
             // 2. Listen for actions
             String message;
             while ((message = in.readLine()) != null) {
+                if (message.equals("READY")) {
+                    controller.handleReady();
+                }
 
                 // Example protocol: "FLIP:3"
                 if (message.startsWith("FLIP")) {
@@ -47,7 +54,7 @@ public class ClientHandler implements Runnable{
 
         } catch (IOException e) {
             System.out.println("Player disconnected");
-            controller.handleDisconected();
+            // TODO: controller.handleDisconected();
 
         } finally {
             try { socket.close(); } catch (IOException ignored) {}
