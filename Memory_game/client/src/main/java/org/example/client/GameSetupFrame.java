@@ -27,6 +27,15 @@ public class GameSetupFrame extends JFrame{
         CardLayout cl = new CardLayout();
         JPanel main = new JPanel(cl);
 
+        connection.setListener(msg -> {
+            if (msg.startsWith("WELCOME:")) {
+                String id = msg.split(":")[1];
+                System.out.println("🎮 You are player " + id);
+            }
+
+            boardView.handleServerMessage(msg); // little fix
+        });
+
         startView = new StartView(() -> cl.show(main, "OP_FIND"));
         opFindView = new OpponnetFindView(() -> cl.show(main, "SETUP"));
         setupView = new SetupView(() -> onBoardConfirm(cl, main));

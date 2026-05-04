@@ -51,6 +51,8 @@ public class ClientHandler implements Runnable{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
+            send("WELCOME! Connected to server!");
+
             //Creating player instance
             player = new PlayerModel();
             String name = in.readLine(); //First message from Client is his name

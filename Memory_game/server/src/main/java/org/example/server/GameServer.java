@@ -76,7 +76,6 @@ public class GameServer {
                 clientSocket.close();
                 continue;
             }
-
             ClientHandler handler = new ClientHandler(clientSocket, controller);
             clients.add(handler);
             new Thread(handler).start();
