@@ -1,10 +1,12 @@
 package org.example.client.view;
 
 import org.example.client.ClientConnection;
+import org.example.common.GameModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BoardView extends JPanel {
@@ -19,6 +21,8 @@ public class BoardView extends JPanel {
 
     public BoardView(ClientConnection con/* ,Runnable onConfirm*/){
         setLayout(new BorderLayout(10,10));
+        rows = GameModel.getInstance().getBoardHeight();
+        cols = GameModel.getInstance().getBoardWidth();
 
         // Game logic
         connection = con;
@@ -28,14 +32,18 @@ public class BoardView extends JPanel {
         add(statsPanel, BorderLayout.NORTH);
 
         // Cards panel (center)
-     /*   rows = controller.getGame().getBoardHeight();
-        cols = controller.getGame().getBoardWidth();
-        cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
+        /*cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
         cards = new ArrayList<>();
-        for(int i=0; i<rows*cols; i++) {
-            Card card = new Card(controller.getCardFront(i), controller.getCardBack());
-            card.addActionListener(e -> handleCardClick(card));
-            cards.add(card);
+        int numCards = rows*cols;
+        for(int i=0; i<numCards/2; i++) {
+            for(int j=0; j<2; j++){
+                Card card = new Card(i*2+j, i+1); // passing card id (2i+j) and image number (i+1)
+                // card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
+                cards.add(card);
+            }
+        }
+        Collections.shuffle(cards);
+        for(Card card : cards){
             cardsPanel.add(card);
         }
         add(cardsPanel, BorderLayout.CENTER);
@@ -75,26 +83,31 @@ public class BoardView extends JPanel {
 
         SwingUtilities.invokeLater(() -> {
 
-            cardsPanel.removeAll();
-            cardsPanel.setLayout(new GridLayout(rows, cols));
-
-            cards.clear();
-
-            for (int i = 0; i < values.length; i++) {
-                Icon cardIcon = getCardFront(Integer.parseInt(values[i]));
-                Card card = new Card(cardIcon,getCardBack());
-                int index = i;
-
-                card.addActionListener(e -> {
-                    connection.send("FLIP:" + index);
-                });
-
-                cards.add(card);
+            cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
+            cards = new ArrayList<>();
+            int numCards = rows*cols;
+            for(int i=0; i<numCards/2; i++) {
+                for(int j=0; j<2; j++){
+                    Card card = new Card(i*2+j, i+1); // passing card id (2i+j) and image number (i+1)
+                    // card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
+                    cards.add(card);
+                }
+            }
+            Collections.shuffle(cards);
+            for(Card card : cards){
                 cardsPanel.add(card);
             }
+            add(cardsPanel, BorderLayout.CENTER);
 
-            revalidate();
-            repaint();
+            // Control panel (bottom)
+            /*controlPanel = new JPanel();
+            JButton leaveButton = new JButton("Leave Game");
+            leaveButton.addActionListener(e -> handleLeave());
+            JButton specialButton = new JButton("Special Move");
+            specialButton.addActionListener(e -> handleSpecial());
+            controlPanel.add(leaveButton);
+            controlPanel.add(specialButton);
+            add(controlPanel, BorderLayout.SOUTH);*/
 
             // 🔥 tell server we're ready
             connection.send("READY");
@@ -109,13 +122,14 @@ public class BoardView extends JPanel {
         return UIManager.getIcon("OptionPane.warningIcon"); // placeholder
     }
 
-/*    private void handleCardClick(Card card) {
-        if(controller.handleFlip(controller.getGame().getCurrentPlayer(), card)) {
+    private void handleCardClick(Card card) {
+        boolean allowed = true;
+        if(allowed) {
             card.flip();
-            controller.processMove(card);
-            statsPanel.refresh(controller);
+            //controller.processMove(card);
+            statsPanel.refresh(/*controller*/);
         }
-    }*/
+    }
 
     private void handleLeave() {
         // TODO: go back to start menu
@@ -129,14 +143,20 @@ public class BoardView extends JPanel {
 
     private static class StatsPanel extends JPanel {
         private JLabel scoreLabel;
+        private GameModel gameData = GameModel.getInstance();
 
         public StatsPanel() {
-            scoreLabel = new JLabel("Score: 0");
+            gameData.getPlayers().get(0).setScore(0);
+            gameData.getPlayers().get(1).setScore(0);
+            scoreLabel = new JLabel(gameData.getPlayers().get(0).getName() + "'s score: " + gameData.getPlayers().get(0).getScore() + "          " +
+                    gameData.getPlayers().get(1).getName() + "'s score: " + gameData.getPlayers().get(1).getScore());
             add(scoreLabel);
         }
 
-        /*public void refresh(GameController game) {
-            scoreLabel.setText("Score: " + game.getScore());
-        }*/
+        public void refresh(/*GameController game*/) {
+            scoreLabel.setText(gameData.getPlayers().get(0).getName() + "'s score: " + gameData.getPlayers().get(0).getScore() + "          " +
+                    gameData.getPlayers().get(1).getName() + "'s score: " + gameData.getPlayers().get(1).getScore());
+        }
     }
+
 }

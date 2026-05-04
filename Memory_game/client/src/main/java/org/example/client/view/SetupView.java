@@ -1,6 +1,6 @@
 package org.example.client.view;
 
-import org.example.GameModel;
+import org.example.common.GameModel;
 
 import javax.swing.*;
 import java.awt.*;

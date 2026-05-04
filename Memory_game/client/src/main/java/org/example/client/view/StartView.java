@@ -1,6 +1,7 @@
 package org.example.client.view;
 
-import org.example.GameModel;
+import org.example.common.GameModel;
+import org.example.common.PlayerModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +40,8 @@ public class StartView extends JPanel {
 
     }
     private void submit(Runnable onStart) {
-        GameModel.getInstance().setThisNickname(nameField.getText());
+        GameModel.getInstance().getPlayers().add(new PlayerModel());
+        GameModel.getInstance().getPlayers().get(0).setName(nameField.getText());
         onStart.run();
     }
 }
