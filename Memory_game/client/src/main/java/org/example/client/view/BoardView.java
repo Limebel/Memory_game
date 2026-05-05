@@ -1,5 +1,7 @@
 package org.example.client.view;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.example.client.ClientConnection;
 import org.example.common.GameModel;
 
@@ -14,6 +16,7 @@ public class BoardView extends JPanel {
     private JPanel cardsPanel;
     private JPanel controlPanel;
 
+    @Getter
     private List<Card> cards;
     private ClientConnection connection;
     private int rows;
