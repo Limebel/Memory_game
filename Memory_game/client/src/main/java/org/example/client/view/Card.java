@@ -13,7 +13,7 @@ public class Card extends JButton {
     @Setter
     private boolean status = true;
     private boolean revealed = false;
-    private int count = 0; // FORT TESTING ONLY
+    private int count = 0; // FOR TESTING ONLY
 
     public Card(int id, int iconNr) {
         String path = String.format("/card_fronts/" + (iconNr+1) + ".png");
@@ -29,6 +29,9 @@ public class Card extends JButton {
         setFocusPainted(false);
         setBorderPainted(false);
         count++;
+        if(count>5){
+            status = true;
+        }
         if(!revealed){
             setIcon(front);
             setBackground(new java.awt.Color(128, 128, 128)); // light gray, "light" in CM
@@ -38,7 +41,7 @@ public class Card extends JButton {
             setBackground(new java.awt.Color(82, 255, 197)); // mint, "base" in CM
         }
         revealed = !revealed;
-        if(status || count>5)setPickedUp();
+        if(status)setPickedUp();
     }
 
     public void setPickedUp() { // card picked up as in no longer available
