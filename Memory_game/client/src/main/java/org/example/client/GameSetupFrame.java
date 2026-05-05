@@ -77,4 +77,10 @@ public class GameSetupFrame extends JFrame{
     public void goWait(){
         cl.show(main, "WAIT");
     }
+
+    public void goReload(boolean[] states){
+        for (int i=0; i < states.length; i++){
+            boardView.getCards().get(i).setStatus(states[i]);
+        }
+    }
 }

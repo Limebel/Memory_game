@@ -1,5 +1,7 @@
 package org.example.client.view;
 
+import lombok.Setter;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,6 +10,8 @@ public class Card extends JButton {
     private int pair;
     private Icon front;
     private Icon back = null;
+    @Setter
+    private boolean status = true;
     private boolean revealed = false;
     private int count = 0; // FORT TESTING ONLY
 
@@ -21,6 +25,7 @@ public class Card extends JButton {
     }
 
     public void flip() {
+        System.out.println(status);
         setFocusPainted(false);
         setBorderPainted(false);
         count++;
@@ -33,7 +38,7 @@ public class Card extends JButton {
             setBackground(new java.awt.Color(82, 255, 197)); // mint, "base" in CM
         }
         revealed = !revealed;
-        if(count>1)setPickedUp();
+        if(status || count>5)setPickedUp();
     }
 
     public void setPickedUp() { // card picked up as in no longer available

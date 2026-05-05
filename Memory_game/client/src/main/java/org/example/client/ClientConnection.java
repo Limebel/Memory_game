@@ -22,6 +22,7 @@ public class ClientConnection {
     private int[] cards;
     private int height;
     private int width;
+    private boolean[] states;
 
     public ClientConnection(String host, int port){
         try {
@@ -79,12 +80,22 @@ public class ClientConnection {
                     }
             }).start();
         }
-        else if(msg.startsWith("sth")){
+        else if(msg.startsWith("STATE")){
             new Thread(() -> {
                 try {
-                    int a = 0;
+                    String[] parts = msg.split(":");
+                    height = Integer.parseInt(parts[1]);
+                    width = Integer.parseInt(parts[2]);
+                    String[] cardsStr = parts[3].split(",");
+                    states = new boolean[height * width];
+                    for(int i = 0; i<(height*width); i++){
+                        states[i] = Boolean.parseBoolean(cardsStr[i].trim());
+                    }
+                    System.out.println("Successful parsing");
+                    frame.goReload(states);
+                    System.out.println("Reloaded game states");
                 } catch (Exception e) {
-                    System.out.println("Some next text not parsed correctly");
+                    System.out.println("State text not parsed fully");
                 }
             }).start();
         }
