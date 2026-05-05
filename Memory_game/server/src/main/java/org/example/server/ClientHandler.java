@@ -30,6 +30,7 @@ public class ClientHandler implements Runnable{
     public ClientHandler(Socket socket, GameController controller) {
         this.socket = socket;
         this.controller = controller;
+        controller.setChannel(this);
     }
 
     /**
@@ -56,7 +57,7 @@ public class ClientHandler implements Runnable{
             //Creating player instance
             player = new PlayerModel();
             String name = in.readLine(); //First message from Client is his name
-            //TODO:In Client - inform him that he must provide name
+            System.out.println(name);
             player.setName(name);
             player.setAdressIP(socket.getInetAddress());
             controller.handleConnect(player);
@@ -67,8 +68,15 @@ public class ClientHandler implements Runnable{
             while ((message = in.readLine()) != null) {
                 System.out.println("Received: " + message);
 
+                if(message.startsWith("SIZE")){
+                    String[] parts = message.split(" ");
+                    int width = Integer.parseInt(parts[2]);
+                    int height = Integer.parseInt(parts[3]);
+                    controller.startGame(width, height);
+                }
+
                 //Message confirming Client GUI is ready
-                if (message.equals("READY")) {
+                else if (message.equals("READY")) {
                     controller.handleReady();
                 }
 

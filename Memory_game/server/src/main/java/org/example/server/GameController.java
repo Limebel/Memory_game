@@ -29,6 +29,7 @@ public class GameController {
     //listener that forwards game controller messages to game server
     //It is set initialized inside GameServer class
     private GameEventListener listener;
+    private ClientHandler channel;
 
     /**
      * Contructor for game controller
@@ -45,6 +46,10 @@ public class GameController {
      * @param player player that is connecting to game
      */
     public synchronized void handleConnect(PlayerModel player){
+        if(game.getPlayers().size()<2){
+            game.getPlayers().add(0, null);
+            game.getPlayers().add(0, null);
+        }
         if(game.getPlayers().get(0)==null){
             game.getPlayers().set(0, player);
         }
@@ -53,7 +58,8 @@ public class GameController {
         }
 
         if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
-            startGame();
+            channel.send("SIZE CHOICE");
+            //startGame();
         }
     }
 
@@ -61,11 +67,12 @@ public class GameController {
      * Method for initializing game state
      * At the end client are notified to change their GUI
      */
-    public synchronized void startGame(){
+    public synchronized void startGame(int width, int height){
         //Boards size is fixed for now
+
         //TODO: setting flexible board size by one of players
-        game.setBoardHeight(5);
-        game.setBoardWidth(6);
+        game.setBoardHeight(height);
+        game.setBoardWidth(width);
         initializeCards();
         game.setCurrentPlayer(0);
 

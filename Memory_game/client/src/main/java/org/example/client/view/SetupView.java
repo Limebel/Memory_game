@@ -1,5 +1,6 @@
 package org.example.client.view;
 
+import org.example.client.ClientConnection;
 import org.example.common.GameModel;
 
 import javax.swing.*;
@@ -9,8 +10,10 @@ public class SetupView extends JPanel {
     JSlider widthSlider;
     JSlider heightSlider;
     private JButton confirmButton;
+    private ClientConnection connection;
 
-    public SetupView(Runnable onConfirm) {
+    public SetupView(Runnable onConfirm, ClientConnection connection) {
+        this.connection = connection;
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20,20,20,20);
@@ -50,9 +53,12 @@ public class SetupView extends JPanel {
         confirmButton.addActionListener(e -> submit(onConfirm));
     }
     private void submit(Runnable onConfirm) {
-        GameModel.getInstance().setBoardWidth(widthSlider.getValue());
-        GameModel.getInstance().setBoardHeight(heightSlider.getValue());
-        onConfirm.run();
+        int width = widthSlider.getValue();
+        int height = heightSlider.getValue();
+        connection.send("SIZE IS "+width+" "+height);
+        GameModel.getInstance().setBoardWidth(width);
+        GameModel.getInstance().setBoardHeight(height);
+        //onConfirm.run();
     }
 
 }

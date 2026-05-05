@@ -12,7 +12,7 @@ public class Card extends JButton {
     private int count = 0; // FORT TESTING ONLY
 
     public Card(int id, int iconNr) {
-        String path = String.format("/card_fronts/%d.png", iconNr);
+        String path = String.format("/card_fronts/" + iconNr + ".png");
         this.front = new ImageIcon(getClass().getResource(path));
         this.id = id;
         this.pair = iconNr;

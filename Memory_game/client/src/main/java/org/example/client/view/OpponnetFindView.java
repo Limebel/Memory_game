@@ -17,13 +17,13 @@ public class OpponnetFindView  extends JPanel {
 
         Font bigFont = new Font("SansSerif", Font.PLAIN, 36);
 
-        JLabel label = new JLabel("Enter opponent's nickname:");
+        JLabel label = new JLabel("Wait for the opponent...");
         label.setFont(bigFont);
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(label, gbc);
 
-        nameField = new JTextField(20);
+        /*nameField = new JTextField(20);
         nameField.setFont(bigFont);
         nameField.setPreferredSize(new Dimension(200,50));
         gbc.gridy = 1;
@@ -33,14 +33,14 @@ public class OpponnetFindView  extends JPanel {
         start.setFont(bigFont);
         start.setPreferredSize(new Dimension(300, 70));
         gbc.gridy = 3;
-        add(start, gbc);
+        add(start, gbc);*/
 
-        start.addActionListener(e -> submit(onStart));
-        nameField.addActionListener(e -> submit(onStart));
+        //start.addActionListener(e -> submit(onStart));
+        //nameField.addActionListener(e -> submit(onStart));
     }
-    private void submit(Runnable onStart) {
+    /*private void submit(Runnable onStart) {
         GameModel.getInstance().getPlayers().add(new PlayerModel());
         GameModel.getInstance().getPlayers().get(1).setName(nameField.getText());
         onStart.run();
-    }
+    }*/
 }

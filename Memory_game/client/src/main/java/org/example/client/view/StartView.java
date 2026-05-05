@@ -2,6 +2,7 @@ package org.example.client.view;
 
 import org.example.common.GameModel;
 import org.example.common.PlayerModel;
+import org.example.client.ClientConnection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +10,10 @@ import java.awt.*;
 public class StartView extends JPanel {
     JTextField nameField;
     JButton start;
+    ClientConnection connection;
 
-    public StartView(Runnable onStart) {
+    public StartView(Runnable onStart, ClientConnection connection) {
+        this.connection = connection;
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20,20,20,20);
@@ -40,8 +43,10 @@ public class StartView extends JPanel {
 
     }
     private void submit(Runnable onStart) {
+        String name = nameField.getText();
         GameModel.getInstance().getPlayers().add(new PlayerModel());
-        GameModel.getInstance().getPlayers().get(0).setName(nameField.getText());
+        GameModel.getInstance().getPlayers().get(0).setName(name);
+        connection.send(name);
         onStart.run();
     }
 }
