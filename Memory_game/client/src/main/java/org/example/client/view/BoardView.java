@@ -36,7 +36,7 @@ public class BoardView extends JPanel {
             int numCards = rows*cols;
             for(int i=0; i<numCards; i++) {
                 Card card = new Card(i, pairings[i]);
-                // card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
+                card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
                 cards.add(card);
                 cardsPanel.add(card);
             }
@@ -55,33 +55,6 @@ public class BoardView extends JPanel {
             // 🔥 tell server we're ready
             connection.send("READY");
         });
-
-        // Cards panel (center)
-        /*cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
-        cards = new ArrayList<>();
-        int numCards = rows*cols;
-        for(int i=0; i<numCards/2; i++) {
-            for(int j=0; j<2; j++){
-                Card card = new Card(i*2+j, i+1); // passing card id (2i+j) and image number (i+1)
-                // card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
-                cards.add(card);
-            }
-        }
-        Collections.shuffle(cards);
-        for(Card card : cards){
-            cardsPanel.add(card);
-        }
-        add(cardsPanel, BorderLayout.CENTER);
-
-        // Control panel (bottom)
-        controlPanel = new JPanel();
-        JButton leaveButton = new JButton("Leave Game");
-        leaveButton.addActionListener(e -> handleLeave());
-        JButton specialButton = new JButton("Special Move");
-        specialButton.addActionListener(e -> handleSpecial());
-        controlPanel.add(leaveButton);
-        controlPanel.add(specialButton);
-        add(controlPanel, BorderLayout.SOUTH);*/
     }
 
     public void handleServerMessage(String msg) {
