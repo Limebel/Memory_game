@@ -69,6 +69,11 @@ public class GameSetupFrame extends JFrame{
         cl.show(main, "SETUP");
     }
 
+    public synchronized void handleCardFlip(int index){
+        Card card = boardView.getCards().get(index);
+        card.flip();
+    }
+
     public void goBoard() {
         onBoardConfirm(cl, main);
         //cl.show(main, "BOARD");
@@ -78,9 +83,13 @@ public class GameSetupFrame extends JFrame{
         cl.show(main, "WAIT");
     }
 
-    public void goReload(boolean[] states){
+    public synchronized void goReload(boolean[] states){
         for (int i=0; i < states.length; i++){
-            boardView.getCards().get(i).setStatus(states[i]);
+            Card card = boardView.getCards().get(i);
+            card.setStatus(states[i]);
+            if(card.getStatus()){
+                card.setPickedUp();
+            }
         }
     }
 }

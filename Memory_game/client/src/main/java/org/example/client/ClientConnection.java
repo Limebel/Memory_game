@@ -99,5 +99,17 @@ public class ClientConnection {
                 }
             }).start();
         }
+        else if(msg.startsWith("FLIPPED")){
+            new Thread(() -> {
+                try {
+                    String[] parts = msg.split(":");
+                    int index = Integer.parseInt(parts[1]);
+                    System.out.println("Message about card flip successfully received");
+                    frame.handleCardFlip(index);
+                }catch(Exception e){
+                    System.out.println("Wrong flipped message received");
+                }
+            }).start();
+        }
     }
 }

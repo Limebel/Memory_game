@@ -117,14 +117,14 @@ public class GameServer {
         sb.append(game.getBoardWidth()).append(":");
 
         for (int i = 0; i < game.getCards().size(); i++) {
-            sb.append(game.getCards().get(i).getIfFlipped());
+            sb.append(game.getCards().get(i).getIfMatched());
             if (i < game.getCards().size() - 1) sb.append(",");
         }
         sendToAll(sb.toString());
     }
 
     private void broadcastCardFlipped(GameModel game, Integer index) {
-        StringBuilder sb = new StringBuilder("Flipped:");
+        StringBuilder sb = new StringBuilder("FLIPPED:");
         sb.append(index.toString());
 
         sendToAll(sb.toString());

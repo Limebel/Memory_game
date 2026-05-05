@@ -12,5 +12,5 @@ public class PlayerModel {
     private UUID id;
     private String name;
     private InetAddress adressIP;
-    private Integer score;
+    private Integer score=0;
 }

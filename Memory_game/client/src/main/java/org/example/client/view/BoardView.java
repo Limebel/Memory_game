@@ -79,12 +79,8 @@ public class BoardView extends JPanel {
     }
 
     private void handleCardClick(Card card) {
-        boolean allowed = true;
-        if(allowed) {
-            card.flip();
-            //controller.processMove(card);
-            statsPanel.refresh(/*controller*/);
-        }
+        connection.send("FLIP:"+card.getId());
+        statsPanel.refresh(/*controller*/);
     }
 
     private void handleLeave() {
