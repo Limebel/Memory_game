@@ -10,6 +10,7 @@ import org.example.common.PlayerModel;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +80,6 @@ public class GameController {
         //Change of game state to FIRST CARD is handled inside handleReady method
 
         notifyInit();
-        notifyBoardStateUpdate();
     }
 
     /**
@@ -132,7 +132,7 @@ public class GameController {
 
         card.setIfFlipped(true);
         //send updated state of the board to clients
-        notifyBoardStateUpdate();
+        notifyCardFlipped(index);
         game.getChosenCards().add(card);
         System.out.println(player + "flipped card" + card);
 
@@ -161,6 +161,7 @@ public class GameController {
         if (card1.getValue().equals(card2.getValue())){
             card1.setIfMatched(true);
             card2.setIfMatched(true);
+            notifyBoardStateUpdate();
             player.setScore(player.getScore()+1);
             //send information about score to clients
             notifyScoreUpdate();
@@ -180,13 +181,33 @@ public class GameController {
             //Cards are flipped again after 2 seconds and we proceed to the next turn
             scheduler.schedule(() -> {
                 synchronized (this) {
+                    List<Integer> indexes = getFirstTwoFlippedIndexes();
+                    notifyCardFlipped(indexes.get(0));
+                    notifyCardFlipped(indexes.get(1));
                     card1.setIfFlipped(false);
                     card2.setIfFlipped(false);
-                    notifyBoardStateUpdate();
                     handleTurnEnd();
                 }
             }, 2, TimeUnit.SECONDS);
         }
+    }
+
+    public List<Integer> getFirstTwoFlippedIndexes() {
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < game.getCards().size(); i++) {
+            CardModel card = game.getCards().get(i);
+
+            if (Boolean.TRUE.equals(card.getIfFlipped())) {
+                result.add(i);
+
+                if (result.size() == 2) {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -224,6 +245,12 @@ public class GameController {
     private synchronized void notifyScoreUpdate() {
         if (listener != null) {
             listener.onScoreChange(game);
+        }
+    }
+
+    private synchronized void notifyCardFlipped(int index){
+        if (listener != null){
+            listener.onCardFlipped(game, index);
         }
     }
 

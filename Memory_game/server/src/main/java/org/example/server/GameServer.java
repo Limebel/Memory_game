@@ -47,6 +47,11 @@ public class GameServer {
             }
 
             @Override
+            public void onCardFlipped(GameModel game, int index){
+                broadcastCardFlipped(game, index);
+            }
+
+            @Override
             public void onScoreChange(GameModel game){
                 broadcastScoreChange(game);
             }
@@ -115,6 +120,13 @@ public class GameServer {
             sb.append(game.getCards().get(i).getIfFlipped());
             if (i < game.getCards().size() - 1) sb.append(",");
         }
+        sendToAll(sb.toString());
+    }
+
+    private void broadcastCardFlipped(GameModel game, Integer index) {
+        StringBuilder sb = new StringBuilder("Flipped:");
+        sb.append(index.toString());
+
         sendToAll(sb.toString());
     }
 
