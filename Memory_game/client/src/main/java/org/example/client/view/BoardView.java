@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BoardView extends JPanel {
     private StatsPanel statsPanel;
@@ -21,14 +22,14 @@ public class BoardView extends JPanel {
     private int rows;
     private int cols;
 
-    public BoardView(ClientConnection con/* ,Runnable onConfirm*/, int rows, int cols, int[] pairings){
+    public BoardView(ClientConnection con, int rows, int cols, int[] pairings){
         setLayout(new BorderLayout(10,10));
 
         // Game logic
         connection = con;
 
         // Stats panel (top)
-        statsPanel = new StatsPanel();
+        statsPanel = new StatsPanel(connection);
         add(statsPanel, BorderLayout.NORTH);
 
         SwingUtilities.invokeLater(() -> {
@@ -69,36 +70,42 @@ public class BoardView extends JPanel {
 
     private void handleCardClick(Card card) {
         connection.send("FLIP:"+card.getId());
-        statsPanel.refresh(/*controller*/);
     }
 
-    private void handleLeave() {
-        // TODO: go back to start menu
-        System.out.println("Leave clicked");
-    }
-
-    private void handleSpecial() {
-        // TODO: handle special move
-        System.out.println("Special clicked");
+    public void refreshStats(){
+        statsPanel.refresh();
     }
 
     private static class StatsPanel extends JPanel {
-        private JLabel scoreLabel;
+        private JLabel yourScoreLabel;
+        private JLabel opponentScoreLabel;
         private GameModel gameData = GameModel.getInstance();
+        private ClientConnection conn;
+        Color highlight = new Color(255, 82, 140);
 
-        public StatsPanel() {
-            scoreLabel = new JLabel("Statistics will go here");
-//            gameData.getPlayers().get(0).setScore(0);
-//            gameData.getPlayers().get(1).setScore(0);
-//            scoreLabel = new JLabel(gameData.getPlayers().get(0).getName() + "'s score: " + gameData.getPlayers().get(0).getScore() + "          " +
-//                    gameData.getPlayers().get(1).getName() + "'s score: " + gameData.getPlayers().get(1).getScore());
-            add(scoreLabel);
+
+        public StatsPanel(ClientConnection conn) {
+            this.conn = conn;
+
+            setLayout(new BorderLayout());
+            setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+            yourScoreLabel = new JLabel("You: " + conn.getYourScore());
+            opponentScoreLabel = new JLabel(conn.getOpponentName() + ": " + conn.getOpponentScore());
+
+            yourScoreLabel.setFont(yourScoreLabel.getFont().deriveFont(Font.BOLD, 24f));
+            opponentScoreLabel.setFont(opponentScoreLabel.getFont().deriveFont(Font.BOLD, 24f));
+
+            yourScoreLabel.setForeground(highlight);
+            opponentScoreLabel.setForeground(highlight);
+
+            add(yourScoreLabel, BorderLayout.WEST);
+            add(opponentScoreLabel, BorderLayout.EAST);
         }
 
-        public void refresh(/*GameController game*/) {
-//            scoreLabel.setText(gameData.getPlayers().get(0).getName() + "'s score: " + gameData.getPlayers().get(0).getScore() + "          " +
-//                    gameData.getPlayers().get(1).getName() + "'s score: " + gameData.getPlayers().get(1).getScore());
-            scoreLabel = new JLabel("Statistics will go here!");
+        public void refresh() {
+            yourScoreLabel.setText("You: " + conn.getYourScore());
+            opponentScoreLabel.setText(conn.getOpponentName() + ": " + conn.getOpponentScore());
         }
     }
 

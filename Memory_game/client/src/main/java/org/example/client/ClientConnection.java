@@ -113,20 +113,30 @@ public class ClientConnection {
                 try {
                     String[] parts = msg.split(":");
                     if(index == 0){
-                        yourScore = Integer.parseInt(parts[2]);
-                        opponentScore = Integer.parseInt(parts[4]);
-                        if(opponentName.equals("")){
-                            opponentName = parts[3];
-                        }
-                    } else if (index == 1) {
-                        yourScore = Integer.parseInt(parts[4]);
+                        yourScore = Integer.parseInt(parts[1]);
                         opponentScore = Integer.parseInt(parts[2]);
-                        if(opponentName.equals("")){
-                            opponentName = parts[1];
-                        }
+                    } else if (index == 1) {
+                        yourScore = Integer.parseInt(parts[2]);
+                        opponentScore = Integer.parseInt(parts[1]);
                     }
                     else System.out.println("Incorrect index");
-                    System.out.println("Your new score is: " + yourScore + ", "+ opponentName +"'s new score is: "+ opponentScore);
+                    frame.reloadStats();
+                } catch (Exception e) {
+                    System.out.println("State text not parsed fully");
+                }
+            }).start();
+        }
+        else if(msg.startsWith("NAMES")){
+            new Thread(() -> {
+                try {
+                    String[] parts = msg.split(":");
+                    if(index == 0){
+                        opponentName = parts[2];
+                    } else if (index == 1) {
+                        opponentName = parts[1];
+                    }
+                    else System.out.println("Incorrect index");
+                    System.out.println("Your opponent's name is " +opponentName);
                 } catch (Exception e) {
                     System.out.println("State text not parsed fully");
                 }

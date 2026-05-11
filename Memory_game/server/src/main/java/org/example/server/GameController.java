@@ -63,7 +63,6 @@ public class GameController {
 
         if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
             channel.send("SIZE CHOICE");
-            //startGame();
         }
         return index;
     }
@@ -73,9 +72,6 @@ public class GameController {
      * At the end client are notified to change their GUI
      */
     public synchronized void startGame(int width, int height){
-        //Boards size is fixed for now
-
-        //TODO: setting flexible board size by one of players
         game.setBoardHeight(height);
         game.setBoardWidth(width);
         initializeCards();
@@ -181,6 +177,7 @@ public class GameController {
                 System.out.println("Finish!!!");
                 game.setState(GameState.GAME_FINISHED);
                 // TODO:handleFinish();
+
             }
             else{
                 game.setState(GameState.FIRST_CARD);

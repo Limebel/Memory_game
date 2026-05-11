@@ -103,6 +103,7 @@ public class GameServer {
             if (i < game.getCards().size() - 1) sb.append(",");
         }
         sendToAll(sb.toString());
+        broadcastNames(game);
     }
 
     /**
@@ -138,12 +139,34 @@ public class GameServer {
      */
     private void broadcastScoreChange(GameModel game) {
         StringBuilder sb = new StringBuilder("SCORE:");
-        sb.append(game.getPlayers().get(0).getName()).append(":");
         sb.append(game.getPlayers().get(0).getScore()).append(":");
-        sb.append(game.getPlayers().get(1).getName()).append(":");
         sb.append(game.getPlayers().get(1).getScore());
 
         sendToAll(sb.toString());
+    }
+
+    private void broadcastNames(GameModel game){
+        StringBuilder sb = new StringBuilder("NAMES:");
+        sb.append(game.getPlayers().get(0).getName()).append(":");
+        sb.append(game.getPlayers().get(1).getName());
+
+        sendToAll(sb.toString());
+    }
+
+    private void finishGame(GameModel game){
+            StringBuilder sb = new StringBuilder("WON:");
+        if(game.getPlayers().get(0).getScore() > game.getPlayers().get(1).getScore()){
+            sb.append(0);
+        }
+        else if (game.getPlayers().get(1).getScore() > game.getPlayers().get(0).getScore()){
+            sb.append(1);
+        }
+        else{
+            sb.append("TIE");
+        }
+
+        sendToAll(sb.toString());
+        System.out.println("sent " + sb);
     }
 
     /**

@@ -51,14 +51,6 @@ public class GameSetupFrame extends JFrame{
         //connection.setListener(boardView::handleServerMessage);
         main.add(boardView, "BOARD"); // add it dynamically
         cl.show(main, "BOARD");
-
-        /*String name = GameModel.getInstance().getPlayers().get(0).getName();
-        String opName = GameModel.getInstance().getPlayers().get(1).getName();
-        int w = GameModel.getInstance().getBoardWidth();
-        int h = GameModel.getInstance().getBoardHeight();*/
-
-        /*JOptionPane.showMessageDialog(this,
-                "Player: " + name + "\nOpponent: " + opName + "\nSize: " + w + "x" + h);*/
     }
 
     public void goStart() {
@@ -76,7 +68,10 @@ public class GameSetupFrame extends JFrame{
 
     public void goBoard() {
         onBoardConfirm(cl, main);
-        //cl.show(main, "BOARD");
+    }
+
+    public void reloadStats(){
+        boardView.refreshStats();
     }
 
     public void goWait(){
