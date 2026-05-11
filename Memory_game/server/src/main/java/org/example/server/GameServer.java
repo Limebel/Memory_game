@@ -138,7 +138,9 @@ public class GameServer {
      */
     private void broadcastScoreChange(GameModel game) {
         StringBuilder sb = new StringBuilder("SCORE:");
-        sb.append(game.getPlayers().get(0).getScore()).append(",");
+        sb.append(game.getPlayers().get(0).getName()).append(":");
+        sb.append(game.getPlayers().get(0).getScore()).append(":");
+        sb.append(game.getPlayers().get(1).getName()).append(":");
         sb.append(game.getPlayers().get(1).getScore());
 
         sendToAll(sb.toString());

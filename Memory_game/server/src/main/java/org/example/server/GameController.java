@@ -46,22 +46,26 @@ public class GameController {
      * If the second player connects game starts
      * @param player player that is connecting to game
      */
-    public synchronized void handleConnect(PlayerModel player){
+    public synchronized int handleConnect(PlayerModel player){
+        int index = 2;
         if(game.getPlayers().size()<2){
             game.getPlayers().add(0, null);
             game.getPlayers().add(0, null);
         }
         if(game.getPlayers().get(0)==null){
             game.getPlayers().set(0, player);
+            index = 0;
         }
         else if(game.getPlayers().get(1)==null){
             game.getPlayers().set(1, player);
+            index = 1;
         }
 
         if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
             channel.send("SIZE CHOICE");
             //startGame();
         }
+        return index;
     }
 
     /**
@@ -166,8 +170,11 @@ public class GameController {
             card2.setIfFlipped(false);
             notifyBoardStateUpdate();
             player.setScore(player.getScore()+1);
+            System.out.println(player.getName() + "'s score is now " + player.getScore());
+
             //send information about score to clients
-            //notifyScoreUpdate();
+            notifyScoreUpdate();
+
             PlayerModel player1 = game.getPlayers().get(0);
             PlayerModel player2 = game.getPlayers().get(1);
             if(player1.getScore()+player2.getScore() == (game.getCards().size()/2)){

@@ -60,8 +60,8 @@ public class ClientHandler implements Runnable{
             System.out.println(name);
             player.setName(name);
             player.setAdressIP(socket.getInetAddress());
-            controller.handleConnect(player);
-            out.println("Player Connected");
+            int num = controller.handleConnect(player);
+            out.println("Player " + num + " connected");
 
             //Listening for messages in infinite loop and handling them appropriately
             String message;

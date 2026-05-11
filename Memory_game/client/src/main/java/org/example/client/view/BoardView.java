@@ -8,7 +8,6 @@ import org.example.common.GameModel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class BoardView extends JPanel {
@@ -44,16 +43,6 @@ public class BoardView extends JPanel {
                 cardsPanel.add(card);
             }
             add(cardsPanel, BorderLayout.CENTER);
-
-            // Control panel (bottom)
-            /*controlPanel = new JPanel();
-            JButton leaveButton = new JButton("Leave Game");
-            leaveButton.addActionListener(e -> handleLeave());
-            JButton specialButton = new JButton("Special Move");
-            specialButton.addActionListener(e -> handleSpecial());
-            controlPanel.add(leaveButton);
-            controlPanel.add(specialButton);
-            add(controlPanel, BorderLayout.SOUTH);*/
 
             // 🔥 tell server we're ready
             connection.send("READY");

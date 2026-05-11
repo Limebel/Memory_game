@@ -24,6 +24,11 @@ public class ClientConnection {
     private int width;
     private boolean[] states;
 
+    private int index;
+    private int yourScore = 0;
+    private int opponentScore = 0;
+    private String opponentName = "";
+
     public ClientConnection(String host, int port){
         try {
             socket = new Socket(host, port);
@@ -63,6 +68,10 @@ public class ClientConnection {
         if(msg.startsWith("SIZE CHOICE")){
             SwingUtilities.invokeLater(frame::goSetup);
         }
+        if(msg.startsWith("Player")){
+            String[] parts = msg.split(" ");
+            index = Integer.parseInt(parts[1]);
+        }
         else if(msg.startsWith("INIT")){
             new Thread(() -> {
                     try {
@@ -94,6 +103,30 @@ public class ClientConnection {
                     System.out.println("Successful parsing");
                     frame.goReload(states);
                     System.out.println("Reloaded game states");
+                } catch (Exception e) {
+                    System.out.println("State text not parsed fully");
+                }
+            }).start();
+        }
+        else if(msg.startsWith("SCORE")){
+            new Thread(() -> {
+                try {
+                    String[] parts = msg.split(":");
+                    if(index == 0){
+                        yourScore = Integer.parseInt(parts[2]);
+                        opponentScore = Integer.parseInt(parts[4]);
+                        if(opponentName.equals("")){
+                            opponentName = parts[3];
+                        }
+                    } else if (index == 1) {
+                        yourScore = Integer.parseInt(parts[4]);
+                        opponentScore = Integer.parseInt(parts[2]);
+                        if(opponentName.equals("")){
+                            opponentName = parts[1];
+                        }
+                    }
+                    else System.out.println("Incorrect index");
+                    System.out.println("Your new score is: " + yourScore + ", "+ opponentName +"'s new score is: "+ opponentScore);
                 } catch (Exception e) {
                     System.out.println("State text not parsed fully");
                 }
