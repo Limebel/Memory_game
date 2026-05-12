@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,7 +31,10 @@ public class GameController {
     //listener that forwards game controller messages to game server
     //It is set initialized inside GameServer class
     private GameEventListener listener;
+
     private ClientHandler channel;
+    //TODO: understand what SchedulerFuture is for
+    private ScheduledFuture<?> disconnectTask;
 
     /**
      * Contructor for game controller
@@ -47,6 +51,28 @@ public class GameController {
      * @param player player that is connecting to game
      */
     public synchronized int handleConnect(PlayerModel player){
+        // reconnect case
+        //TODO: check reconnection work
+        /*for (PlayerModel p : game.getPlayers()) {
+
+            if (p != null &&
+                    p.getName().equals(player.getName())) {
+
+                p.setConnected(true);
+
+                System.out.println("Player reconnected");
+
+                if (disconnectTask != null) {
+                    disconnectTask.cancel(false);
+                }
+
+                game.setState(GameState.FIRST_CARD);
+
+                notifyBoardStateUpdate();
+
+                return game.getPlayers().indexOf(p);
+            }
+        }*/
         int index = 2;
         if(game.getPlayers().size()<2){
             game.getPlayers().add(0, null);
@@ -62,6 +88,8 @@ public class GameController {
         }
 
         if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
+            notifyOnSizeChoice(player);
+            //TODO: change this communication to be handled outside of game controller
             channel.send("SIZE CHOICE");
         }
         return index;
@@ -156,7 +184,6 @@ public class GameController {
      * @param player The player that flipped the card
      */
     private synchronized void handleChecking(PlayerModel player){
-        //TODO:add delay for matched cards
         CardModel card1 = game.getChosenCards().get(0);
         CardModel card2 = game.getChosenCards().get(1);
         if (card1.getValue().equals(card2.getValue())){
@@ -225,6 +252,21 @@ public class GameController {
         return result;
     }
 
+    public synchronized void handleDisconnect(PlayerModel player){
+        player.setConnected(false);
+        game.setState(GameState.PAUSED);
+
+        disconnectTask = scheduler.schedule(() -> {
+            synchronized(this){
+                if(!player.isConnected()){
+                    System.out.println("Reconnect timeout");
+                    game.setState(GameState.GAME_FINISHED);
+                    handleFinish();
+                }
+            }
+        }, 5, TimeUnit.SECONDS);
+    }
+
     /**
      * Method for handling end of a turn
      * It changes current Player, changes game state
@@ -272,6 +314,13 @@ public class GameController {
     private synchronized void notifyWinner(){
         if (listener != null){
             listener.onGameFinish(game);
+        }
+    }
+
+    private synchronized void notifyOnSizeChoice(PlayerModel player){
+        if (listener != null){
+            //player index is fixed set on 1 meaning second player will always choose size
+            listener.onSizeChoice(game, player);
         }
     }
 

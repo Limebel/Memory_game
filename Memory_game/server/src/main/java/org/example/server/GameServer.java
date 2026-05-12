@@ -56,7 +56,18 @@ public class GameServer {
                 broadcastScoreChange(game);
             }
 
+            @Override
             public void onGameFinish(GameModel game){ broadcastFinishGame(game);}
+
+            @Override
+            public void onSizeChoice(GameModel game, int playerIndex){
+
+            }
+
+            @Override
+            public void onSendMessage(String message, int playerIndex){
+
+            }
             //TODO:Other neccessary broadcasts
         });
     }
@@ -157,7 +168,13 @@ public class GameServer {
 
     private void broadcastFinishGame(GameModel game){
         StringBuilder sb = new StringBuilder("WON:");
-        if(game.getPlayers().get(0).getScore() > game.getPlayers().get(1).getScore()){
+        if(!game.getPlayers().get(1).isConnected()){
+            sb.append(0);
+        }
+        else if(!game.getPlayers().get(0).isConnected()){
+            sb.append(1);
+        }
+        else if(game.getPlayers().get(0).getScore() > game.getPlayers().get(1).getScore()){
             sb.append(0);
         }
         else if (game.getPlayers().get(1).getScore() > game.getPlayers().get(0).getScore()){

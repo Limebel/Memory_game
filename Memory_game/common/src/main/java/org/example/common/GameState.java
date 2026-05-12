@@ -5,5 +5,6 @@ public enum GameState {
         FIRST_CARD,
         SECOND_CARD,
         CHECKING,
+        PAUSED,
         GAME_FINISHED
 }

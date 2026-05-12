@@ -1,5 +1,6 @@
 package org.example.server;
 
+import org.example.common.GameState;
 import org.example.common.PlayerModel;
 
 import java.io.*;
@@ -102,7 +103,7 @@ public class ClientHandler implements Runnable{
 
         } catch (IOException e) {
             System.out.println("Player disconnected");
-            // TODO: controller.handleDisconected();
+            controller.handleDisconnect(player);
 
         } finally {
             //At the end if player disconnects socket is closed
