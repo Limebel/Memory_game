@@ -160,23 +160,26 @@ public class GameController {
         CardModel card1 = game.getChosenCards().get(0);
         CardModel card2 = game.getChosenCards().get(1);
         if (card1.getValue().equals(card2.getValue())){
-            card1.setIfMatched(true);
-            card2.setIfMatched(true);
-            card1.setIfFlipped(false);
-            card2.setIfFlipped(false);
-            notifyBoardStateUpdate();
             player.setScore(player.getScore()+1);
             System.out.println(player.getName() + "'s score is now " + player.getScore());
-
             //send information about score to clients
             notifyScoreUpdate();
 
+            scheduler.schedule(() -> {
+                synchronized (this) {
+                    card1.setIfMatched(true);
+                    card2.setIfMatched(true);
+                    card1.setIfFlipped(false);
+                    card2.setIfFlipped(false);
+                    notifyBoardStateUpdate();
+                }
+            }, 1, TimeUnit.SECONDS);
             PlayerModel player1 = game.getPlayers().get(0);
             PlayerModel player2 = game.getPlayers().get(1);
             if(player1.getScore()+player2.getScore() == (game.getCards().size()/2)){
                 System.out.println("Finish!!!");
                 game.setState(GameState.GAME_FINISHED);
-                // TODO:handleFinish();
+                handleFinish();
 
             }
             else{
@@ -198,6 +201,10 @@ public class GameController {
                 }
             }, 2, TimeUnit.SECONDS);
         }
+    }
+
+    public synchronized void handleFinish(){
+        notifyWinner();
     }
 
     public List<Integer> getFirstTwoFlippedIndexes() {
@@ -259,6 +266,12 @@ public class GameController {
     private synchronized void notifyCardFlipped(int index){
         if (listener != null){
             listener.onCardFlipped(game, index);
+        }
+    }
+
+    private synchronized void notifyWinner(){
+        if (listener != null){
+            listener.onGameFinish(game);
         }
     }
 

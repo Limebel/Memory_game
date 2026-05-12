@@ -55,6 +55,8 @@ public class GameServer {
             public void onScoreChange(GameModel game){
                 broadcastScoreChange(game);
             }
+
+            public void onGameFinish(GameModel game){ broadcastFinishGame(game);}
             //TODO:Other neccessary broadcasts
         });
     }
@@ -153,8 +155,8 @@ public class GameServer {
         sendToAll(sb.toString());
     }
 
-    private void finishGame(GameModel game){
-            StringBuilder sb = new StringBuilder("WON:");
+    private void broadcastFinishGame(GameModel game){
+        StringBuilder sb = new StringBuilder("WON:");
         if(game.getPlayers().get(0).getScore() > game.getPlayers().get(1).getScore()){
             sb.append(0);
         }

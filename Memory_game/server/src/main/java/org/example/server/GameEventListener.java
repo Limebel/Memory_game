@@ -8,4 +8,5 @@ public interface GameEventListener {
     void onBoardStateChange(GameModel game);
     void onCardFlipped(GameModel game, int index);
     void onScoreChange(GameModel game);
+    void onGameFinish(GameModel game);
 }
