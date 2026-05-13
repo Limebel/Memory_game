@@ -154,5 +154,14 @@ public class ClientConnection {
                 }
             }).start();
         }
+        else if(msg.startsWith("WON")){
+            new Thread(() -> {
+                try {
+                    //TODO: Implement game end behaviour
+                }catch(Exception e){
+                    System.out.println("Wrong won message received");
+                }
+            }).start();
+        }
     }
 }

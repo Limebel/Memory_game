@@ -1,6 +1,7 @@
 package org.example.server;
 
 import org.example.common.GameModel;
+import org.example.common.PlayerModel;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -59,16 +60,33 @@ public class GameServer {
             @Override
             public void onGameFinish(GameModel game){ broadcastFinishGame(game);}
 
+            /**
+             * Second player is informed to chose board size
+             * @param game the game that is played, provided by game controller
+             */
             @Override
-            public void onSizeChoice(GameModel game, int playerIndex){
-
+            public void onSizeChoice(GameModel game){
+                //second player always chooses board size
+                PlayerModel secondPlayer = game.getPlayers().get(1);
+                for (ClientHandler c : clients) {
+                    if (c.getPlayer() == secondPlayer) {
+                        c.send("SIZE CHOICE");
+                        return;
+                    }
+                }
+                throw new IllegalStateException("No second player found");
             }
 
             @Override
-            public void onSendMessage(String message, int playerIndex){
-
+            public void onSendMessage(String message, PlayerModel player){
+                for (ClientHandler c : clients) {
+                    if (c.getPlayer() == player) {
+                        c.send("CUSTOM MESSAGE:" + message);
+                        return;
+                    }
+                }
+                throw new IllegalStateException("No player to send message found");
             }
-            //TODO:Other neccessary broadcasts
         });
     }
 
@@ -158,6 +176,10 @@ public class GameServer {
         sendToAll(sb.toString());
     }
 
+    /**
+     * Broadcasting player names
+     * @param game the game that is played, provided by game controller
+     */
     private void broadcastNames(GameModel game){
         StringBuilder sb = new StringBuilder("NAMES:");
         sb.append(game.getPlayers().get(0).getName()).append(":");
@@ -166,6 +188,11 @@ public class GameServer {
         sendToAll(sb.toString());
     }
 
+    /**
+     * Broadcasting information about game finish and the winner of the game
+     * If game ended by player disconnection other player is decided the winner
+     * @param game the game that is played, provided by game controller
+     */
     private void broadcastFinishGame(GameModel game){
         StringBuilder sb = new StringBuilder("WON:");
         if(!game.getPlayers().get(1).isConnected()){

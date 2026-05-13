@@ -10,6 +10,6 @@ public interface GameEventListener {
     void onCardFlipped(GameModel game, int index);
     void onScoreChange(GameModel game);
     void onGameFinish(GameModel game);
-    void onSizeChoice(GameModel game, PlayerModel player);
+    void onSizeChoice(GameModel game);
     void onSendMessage(String message, PlayerModel player);
 }

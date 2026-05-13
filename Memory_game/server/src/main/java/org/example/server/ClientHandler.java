@@ -1,5 +1,6 @@
 package org.example.server;
 
+import lombok.Getter;
 import org.example.common.GameState;
 import org.example.common.PlayerModel;
 
@@ -17,6 +18,7 @@ public class ClientHandler implements Runnable{
     //game controller
     private final GameController controller;
     //player representation of client
+    @Getter
     private PlayerModel player;
 
     //Input and output
@@ -31,7 +33,6 @@ public class ClientHandler implements Runnable{
     public ClientHandler(Socket socket, GameController controller) {
         this.socket = socket;
         this.controller = controller;
-        controller.setChannel(this);
     }
 
     /**

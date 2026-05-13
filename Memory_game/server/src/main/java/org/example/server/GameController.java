@@ -32,7 +32,6 @@ public class GameController {
     //It is set initialized inside GameServer class
     private GameEventListener listener;
 
-    private ClientHandler channel;
     //TODO: understand what SchedulerFuture is for
     private ScheduledFuture<?> disconnectTask;
 
@@ -52,24 +51,16 @@ public class GameController {
      */
     public synchronized int handleConnect(PlayerModel player){
         // reconnect case
-        //TODO: check reconnection work
-        /*for (PlayerModel p : game.getPlayers()) {
-
-            if (p != null &&
-                    p.getName().equals(player.getName())) {
-
+        //TODO: check if reconnection works
+/*        for (PlayerModel p : game.getPlayers()) {
+            if (p != null && p.getName().equals(player.getName())) {
                 p.setConnected(true);
-
                 System.out.println("Player reconnected");
-
                 if (disconnectTask != null) {
                     disconnectTask.cancel(false);
                 }
-
                 game.setState(GameState.FIRST_CARD);
-
-                notifyBoardStateUpdate();
-
+                //TODO: Game restart check
                 return game.getPlayers().indexOf(p);
             }
         }*/
@@ -88,9 +79,7 @@ public class GameController {
         }
 
         if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
-            notifyOnSizeChoice(player);
-            //TODO: change this communication to be handled outside of game controller
-            channel.send("SIZE CHOICE");
+            notifyOnSizeChoice();
         }
         return index;
     }
@@ -192,6 +181,7 @@ public class GameController {
             //send information about score to clients
             notifyScoreUpdate();
 
+            //Cards disappear after 1 second
             scheduler.schedule(() -> {
                 synchronized (this) {
                     card1.setIfMatched(true);
@@ -230,10 +220,19 @@ public class GameController {
         }
     }
 
+    /**
+     * Method for handling end of the game events
+     */
     public synchronized void handleFinish(){
         notifyWinner();
     }
 
+    /**
+     * Method return first two cards that are flipped
+     * (meaning the all that are flipped - were chosen to flipped in this turn)
+     * It is used to organize board after checking for cards matching
+     * @return 2 elements list of cards that are flipped
+     */
     public List<Integer> getFirstTwoFlippedIndexes() {
         List<Integer> result = new ArrayList<>();
 
@@ -252,6 +251,12 @@ public class GameController {
         return result;
     }
 
+    /**
+     * Method for handling player being disconnected
+     * If player do not connect back in 5 seconds the game is finished
+     * and other player is decided to be the winner
+     * @param player the player being disconnected
+     */
     public synchronized void handleDisconnect(PlayerModel player){
         player.setConnected(false);
         game.setState(GameState.PAUSED);
@@ -288,7 +293,7 @@ public class GameController {
     }
 
     /**
-     * Method to activate board state update sending
+     * Method to activate board state update message
      */
     private synchronized void notifyBoardStateUpdate() {
         if (listener != null) {
@@ -297,7 +302,7 @@ public class GameController {
     }
 
     /**
-     * Method to activate score update sending
+     * Method to activate score update message
      */
     private synchronized void notifyScoreUpdate() {
         if (listener != null) {
@@ -305,22 +310,40 @@ public class GameController {
         }
     }
 
+    /**
+     * Method to activate card being flipped message
+     */
     private synchronized void notifyCardFlipped(int index){
         if (listener != null){
             listener.onCardFlipped(game, index);
         }
     }
 
+    /**
+     * Method to activate score winner notification message
+     */
     private synchronized void notifyWinner(){
         if (listener != null){
             listener.onGameFinish(game);
         }
     }
 
-    private synchronized void notifyOnSizeChoice(PlayerModel player){
+    /**
+     * Method to activate size choice message
+     */
+    private synchronized void notifyOnSizeChoice(){
         if (listener != null){
             //player index is fixed set on 1 meaning second player will always choose size
-            listener.onSizeChoice(game, player);
+            listener.onSizeChoice(game);
+        }
+    }
+
+    /**
+     * Method to activate custom message
+     */
+    private synchronized void notifyOnSendMessage(String message,PlayerModel player){
+        if (listener != null){
+            listener.onSendMessage(message, player);
         }
     }
 
