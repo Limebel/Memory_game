@@ -1,5 +1,6 @@
 package org.example.server;
 
+import org.example.common.CardModel;
 import org.example.common.GameModel;
 import org.example.common.PlayerModel;
 
@@ -8,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,23 +41,18 @@ public class GameServer {
         controller.setListener(new GameEventListener() {
             @Override
             public void onInit(GameModel game) {
-                broadcastInit(game);
+                sendToAll(initMessage(game));
+                sendToAll(namesMessage(game));
             }
 
             @Override
-            public void onBoardStateChange(GameModel game) {
-                broadcastBoardState(game);
-            }
+            public void onBoardStateChange(GameModel game) {sendToAll(boardStateMessage(game));}
 
             @Override
-            public void onCardFlipped(GameModel game, int index){
-                broadcastCardFlipped(game, index);
-            }
+            public void onCardFlipped(GameModel game, int index){sendToAll(cardFlippedMessage(game, index));}
 
             @Override
-            public void onScoreChange(GameModel game){
-                broadcastScoreChange(game);
-            }
+            public void onScoreChange(GameModel game){sendToAll(scoreMessage(game));}
 
             @Override
             public void onGameFinish(GameModel game){ broadcastFinishGame(game);}
@@ -82,6 +79,32 @@ public class GameServer {
                 for (ClientHandler c : clients) {
                     if (c.getPlayer() == player) {
                         c.send("CUSTOM MESSAGE:" + message);
+                        return;
+                    }
+                }
+                throw new IllegalStateException("No player to send message found");
+            }
+
+            @Override
+            public void onPlayerDisconnected (PlayerModel player){
+                Iterator<ClientHandler> it = clients.iterator();
+                while (it.hasNext()) {
+                    ClientHandler c = it.next();
+                    if (c.getPlayer() == player) {
+                        it.remove();
+                        System.out.println("Removed disconnected client: "
+                                        + player.getName());
+                        return;
+                    }
+                }
+                throw new IllegalStateException("No client found to remove");
+            }
+
+            @Override
+            public void onReconnection (GameModel game, PlayerModel player){
+                for (ClientHandler c : clients) {
+                    if (c.getPlayer() == player) {
+                        sendStateAfterReconnection(game, c);
                         return;
                     }
                 }
@@ -123,8 +146,9 @@ public class GameServer {
      * Message structure is like:
      * INIT:BoardHeight:BoardWidth:valueCard1,valueCard2...
      * @param game the game that is played, provided by game controller
+     * @return initialization message
      */
-    private void broadcastInit(GameModel game) {
+    private String initMessage(GameModel game) {
         StringBuilder sb = new StringBuilder("INIT:");
         sb.append(game.getBoardHeight()).append(":");
         sb.append(game.getBoardWidth()).append(":");
@@ -133,8 +157,7 @@ public class GameServer {
             sb.append(game.getCards().get(i).getValue());
             if (i < game.getCards().size() - 1) sb.append(",");
         }
-        sendToAll(sb.toString());
-        broadcastNames(game);
+        return sb.toString();
     }
 
     /**
@@ -143,7 +166,7 @@ public class GameServer {
      * STATE:true,false,true...
      * @param game the game that is played, provided by game controller
      */
-    private void broadcastBoardState(GameModel game) {
+    private String boardStateMessage(GameModel game) {
         StringBuilder sb = new StringBuilder("STATE:");
         sb.append(game.getBoardHeight()).append(":");
         sb.append(game.getBoardWidth()).append(":");
@@ -152,14 +175,14 @@ public class GameServer {
             sb.append(game.getCards().get(i).getIfMatched());
             if (i < game.getCards().size() - 1) sb.append(",");
         }
-        sendToAll(sb.toString());
+        return sb.toString();
     }
 
-    private void broadcastCardFlipped(GameModel game, Integer index) {
+    private String cardFlippedMessage(GameModel game, Integer index) {
         StringBuilder sb = new StringBuilder("FLIPPED:");
         sb.append(index.toString());
 
-        sendToAll(sb.toString());
+        return sb.toString();
     }
 
     /**
@@ -168,24 +191,23 @@ public class GameServer {
      * SCORE:4,5
      * @param game the game that is played, provided by game controller
      */
-    private void broadcastScoreChange(GameModel game) {
+    private String scoreMessage(GameModel game) {
         StringBuilder sb = new StringBuilder("SCORE:");
         sb.append(game.getPlayers().get(0).getScore()).append(":");
         sb.append(game.getPlayers().get(1).getScore());
 
-        sendToAll(sb.toString());
+        return sb.toString();
     }
 
     /**
      * Broadcasting player names
      * @param game the game that is played, provided by game controller
      */
-    private void broadcastNames(GameModel game){
+    private String namesMessage(GameModel game){
         StringBuilder sb = new StringBuilder("NAMES:");
         sb.append(game.getPlayers().get(0).getName()).append(":");
         sb.append(game.getPlayers().get(1).getName());
-
-        sendToAll(sb.toString());
+        return sb.toString();
     }
 
     /**
@@ -213,6 +235,18 @@ public class GameServer {
 
         sendToAll(sb.toString());
         System.out.println("sent " + sb);
+    }
+
+    private void sendStateAfterReconnection(GameModel game, ClientHandler client){
+        client.send(initMessage(game));
+        client.send(namesMessage(game));
+        client.send(boardStateMessage(game));
+        client.send(scoreMessage(game));
+        for(int i=0;i<game.getCards().size();i++){
+            if(game.getCards().get(i).getIfFlipped()){
+                client.send(cardFlippedMessage(game, i));
+            }
+        }
     }
 
     /**

@@ -12,4 +12,6 @@ public interface GameEventListener {
     void onGameFinish(GameModel game);
     void onSizeChoice(GameModel game);
     void onSendMessage(String message, PlayerModel player);
+    void onPlayerDisconnected (PlayerModel player);
+    void onReconnection (GameModel game, PlayerModel player);
 }

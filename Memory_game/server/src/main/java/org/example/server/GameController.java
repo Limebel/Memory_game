@@ -32,8 +32,12 @@ public class GameController {
     //It is set initialized inside GameServer class
     private GameEventListener listener;
 
-    //TODO: understand what SchedulerFuture is for
+    //task that is set for player disconnection
+    //It is needed to be an object in case player reconnects
     private ScheduledFuture<?> disconnectTask;
+    //Game state before reconnection happened
+    //Needed to properly reconnect
+    private GameState previousState;
 
     /**
      * Contructor for game controller
@@ -49,39 +53,32 @@ public class GameController {
      * If the second player connects game starts
      * @param player player that is connecting to game
      */
-    public synchronized int handleConnect(PlayerModel player){
+    public synchronized void handleConnect(PlayerModel player){
         // reconnect case
         //TODO: check if reconnection works
-/*        for (PlayerModel p : game.getPlayers()) {
+        for (PlayerModel p : game.getPlayers()) {
             if (p != null && p.getName().equals(player.getName())) {
-                p.setConnected(true);
-                System.out.println("Player reconnected");
-                if (disconnectTask != null) {
-                    disconnectTask.cancel(false);
+                //should trigger only if player is disconnected
+                if(!p.isConnected()) {
+                    p.setConnected(true);
+                    System.out.println("Player reconnected");
+                    notifyOnSendMessage("Player Reconnected", player);
+                    if (disconnectTask != null) {
+                        disconnectTask.cancel(false);
+                    }
+                    notifyOnReconnection(player);
+                    game.setState(previousState);
+                    return;
                 }
-                game.setState(GameState.FIRST_CARD);
-                //TODO: Game restart check
-                return game.getPlayers().indexOf(p);
             }
-        }*/
-        int index = 2;
+        }
         if(game.getPlayers().size()<2){
-            game.getPlayers().add(0, null);
-            game.getPlayers().add(0, null);
+            game.getPlayers().add(player);
+            notifyOnSendMessage("Player Connected", player);
         }
-        if(game.getPlayers().get(0)==null){
-            game.getPlayers().set(0, player);
-            index = 0;
-        }
-        else if(game.getPlayers().get(1)==null){
-            game.getPlayers().set(1, player);
-            index = 1;
-        }
-
-        if (game.getPlayers().get(0) != null && game.getPlayers().get(1) != null) {
+        if (game.getPlayers().size()==2) {
             notifyOnSizeChoice();
         }
-        return index;
     }
 
     /**
@@ -129,11 +126,13 @@ public class GameController {
      */
     public synchronized boolean handleFlip(PlayerModel player, int index) {
         if (!player.equals(game.getPlayers().get(game.getCurrentPlayer()))){
+            notifyOnSendMessage("Invalid flip: not your turn", player);
             System.out.println("Wrong player tried to flip the card");
             return false;
         }
         GameState currentState = game.getState();
         if (currentState != GameState.FIRST_CARD && currentState != GameState.SECOND_CARD){
+            notifyOnSendMessage("Invalid flip: not flipping phase", player);
             System.out.println("Player tried to flipped card when it's not turn for it");
             return false;
         }
@@ -143,6 +142,7 @@ public class GameController {
         }
         CardModel card = game.getCards().get(index);
         if (card.getIfFlipped() || card.getIfMatched()){
+            notifyOnSendMessage("Invalid flip: card is already matched or flipped", player);
             System.out.println("Player tried to flipped card, which is already matched or flipped");
             return false;
         }
@@ -259,7 +259,9 @@ public class GameController {
      */
     public synchronized void handleDisconnect(PlayerModel player){
         player.setConnected(false);
+        previousState = game.getState();
         game.setState(GameState.PAUSED);
+        notifyOnPlayerDisconnected(player);
 
         disconnectTask = scheduler.schedule(() -> {
             synchronized(this){
@@ -269,7 +271,7 @@ public class GameController {
                     handleFinish();
                 }
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 30, TimeUnit.SECONDS); //30 seconds for testing
     }
 
     /**
@@ -344,6 +346,24 @@ public class GameController {
     private synchronized void notifyOnSendMessage(String message,PlayerModel player){
         if (listener != null){
             listener.onSendMessage(message, player);
+        }
+    }
+
+    /**
+     * Method to inform server about player disconnection
+     */
+    private synchronized void notifyOnPlayerDisconnected(PlayerModel player){
+        if (listener != null){
+            listener.onPlayerDisconnected(player);
+        }
+    }
+
+    /**
+     * Method to inform server about player disconnection
+     */
+    private synchronized void notifyOnReconnection(PlayerModel player){
+        if (listener != null){
+            listener.onReconnection(game, player);
         }
     }
 
