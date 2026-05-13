@@ -110,6 +110,17 @@ public class GameServer {
                 }
                 throw new IllegalStateException("No player to send message found");
             }
+
+            @Override
+            public void onConnect (GameModel game,int index){
+                for (ClientHandler c : clients) {
+                    if (c.getPlayer() == game.getPlayers().get(index)) {
+                        c.send("Player " + index + " connected");
+                        return;
+                    }
+                }
+                throw new IllegalStateException("No player to send message found");
+            }
         });
     }
 

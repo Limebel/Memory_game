@@ -74,7 +74,7 @@ public class GameController {
         }
         if(game.getPlayers().size()<2){
             game.getPlayers().add(player);
-            notifyOnSendMessage("Player Connected", player);
+            notifyOnConnect(game, game.getPlayers().size()-1);
         }
         if (game.getPlayers().size()==2) {
             notifyOnSizeChoice();
@@ -368,14 +368,25 @@ public class GameController {
     }
 
     /**
+     * Method to meesage player index
+     */
+    private synchronized void notifyOnConnect(GameModel game, int index){
+        if (listener != null){
+            listener.onConnect(game, index);
+        }
+    }
+
+    /**
      *Method for handling players delay at the start of the game
      *It initializes state to FIRST CARD only if both players are declared ready
      */
     public synchronized void handleReady() {
-        readyPlayers++;
-        if (readyPlayers == 2) {
-            game.setState(GameState.FIRST_CARD);
-            notifyBoardStateUpdate();
+        if(game.getState()==GameState.WAITING_FOR_PLAYERS) {
+            readyPlayers++;
+            if (readyPlayers == 2) {
+                game.setState(GameState.FIRST_CARD);
+                notifyBoardStateUpdate();
+            }
         }
     }
 }

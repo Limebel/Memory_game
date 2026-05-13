@@ -72,96 +72,90 @@ public class ClientConnection {
             String[] parts = msg.split(" ");
             index = Integer.parseInt(parts[1]);
         }
-        else if(msg.startsWith("INIT")){
-            new Thread(() -> {
-                    try {
-                        String[] parts = msg.split(":");
-                        height = Integer.parseInt(parts[1]);
-                        width = Integer.parseInt(parts[2]);
-                        String[] cardsStr = parts[3].split(",");
-                        cards = new int[height * width];
-                        for(int i = 0; i<(height*width); i++){
-                            cards[i] = Integer.parseInt(cardsStr[i].trim());
-                        }
-                        frame.goBoard();
-                    } catch (Exception e) {
-                        System.out.println("Init text not parsed correctly");
-                    }
-            }).start();
-        }
-        else if(msg.startsWith("STATE")){
-            new Thread(() -> {
-                try {
-                    String[] parts = msg.split(":");
-                    height = Integer.parseInt(parts[1]);
-                    width = Integer.parseInt(parts[2]);
-                    String[] cardsStr = parts[3].split(",");
-                    states = new boolean[height * width];
-                    for(int i = 0; i<(height*width); i++){
-                        states[i] = Boolean.parseBoolean(cardsStr[i].trim());
-                    }
-                    System.out.println("Successful parsing");
-                    frame.goReload(states);
-                    System.out.println("Reloaded game states");
-                } catch (Exception e) {
-                    System.out.println("State text not parsed fully");
+        else if(msg.startsWith("INIT")) {
+            try {
+                String[] parts = msg.split(":");
+                height = Integer.parseInt(parts[1]);
+                width = Integer.parseInt(parts[2]);
+                String[] cardsStr = parts[3].split(",");
+                cards = new int[height * width];
+                for (int i = 0; i < (height * width); i++) {
+                    cards[i] = Integer.parseInt(cardsStr[i].trim());
                 }
-            }).start();
+                frame.goBoard();
+            } catch (Exception e) {
+                System.out.println("Init text not parsed correctly");
+            }
         }
-        else if(msg.startsWith("SCORE")){
-            new Thread(() -> {
-                try {
-                    String[] parts = msg.split(":");
-                    if(index == 0){
-                        yourScore = Integer.parseInt(parts[1]);
-                        opponentScore = Integer.parseInt(parts[2]);
-                    } else if (index == 1) {
-                        yourScore = Integer.parseInt(parts[2]);
-                        opponentScore = Integer.parseInt(parts[1]);
-                    }
-                    else System.out.println("Incorrect index");
-                    frame.reloadStats();
-                } catch (Exception e) {
-                    System.out.println("State text not parsed fully");
+        else if(msg.startsWith("STATE")) {
+            try {
+                String[] parts = msg.split(":");
+                height = Integer.parseInt(parts[1]);
+                width = Integer.parseInt(parts[2]);
+                String[] cardsStr = parts[3].split(",");
+                states = new boolean[height * width];
+                for (int i = 0; i < (height * width); i++) {
+                    states[i] = Boolean.parseBoolean(cardsStr[i].trim());
                 }
-            }).start();
+                System.out.println("Successful parsing");
+                frame.goReload(states);
+                System.out.println("Reloaded game states");
+            } catch (Exception e) {
+                System.out.println("State text not parsed fully");
+            }
         }
-        else if(msg.startsWith("NAMES")){
-            new Thread(() -> {
-                try {
-                    String[] parts = msg.split(":");
-                    if(index == 0){
-                        opponentName = parts[2];
-                    } else if (index == 1) {
-                        opponentName = parts[1];
-                    }
-                    else System.out.println("Incorrect index");
-                    System.out.println("Your opponent's name is " +opponentName);
-                } catch (Exception e) {
-                    System.out.println("State text not parsed fully");
-                }
-            }).start();
+        else if(msg.startsWith("SCORE")) {
+            try {
+                String[] parts = msg.split(":");
+                if (index == 0) {
+                    yourScore = Integer.parseInt(parts[1]);
+                    opponentScore = Integer.parseInt(parts[2]);
+                } else if (index == 1) {
+                    yourScore = Integer.parseInt(parts[2]);
+                    opponentScore = Integer.parseInt(parts[1]);
+                } else System.out.println("Incorrect index");
+                frame.reloadStats();
+            } catch (Exception e) {
+                System.out.println("State text not parsed fully");
+            }
         }
-        else if(msg.startsWith("FLIPPED")){
-            new Thread(() -> {
-                try {
-                    String[] parts = msg.split(":");
-                    int index = Integer.parseInt(parts[1]);
-                    System.out.println("Message about card flip successfully received");
-                    frame.handleCardFlip(index);
-                }catch(Exception e){
-                    System.out.println("Wrong flipped message received");
-                }
-            }).start();
+        else if(msg.startsWith("NAMES")) {
+            try {
+                String[] parts = msg.split(":");
+                if (index == 0) {
+                    opponentName = parts[2];
+                } else if (index == 1) {
+                    opponentName = parts[1];
+                } else System.out.println("Incorrect index");
+                System.out.println("Your opponent's name is " + opponentName);
+            } catch (Exception e) {
+                System.out.println("State text not parsed fully");
+            }
+        }
+        else if(msg.startsWith("FLIPPED")) {
+            try {
+                String[] parts = msg.split(":");
+                int index = Integer.parseInt(parts[1]);
+                System.out.println("Message about card flip successfully received");
+                frame.handleCardFlip(index);
+            } catch (Exception e) {
+                System.out.println("Wrong flipped message received");
+            }
         }
         else if(msg.startsWith("WON")){
-            new Thread(() -> {
-                try {
+            try {
                     //TODO: Implement game end behaviour
                 }catch(Exception e){
                     System.out.println("Wrong won message received");
                 }
-            }).start();
+            }
+        else if(msg.startsWith("CUSTOM MESSAGE")) {
+            try {
+                String[] parts = msg.split(":");
+                System.out.println(parts[1]);
+            } catch (Exception e) {
+                System.out.println("Wrong won message received");
+            }
         }
     }
 }

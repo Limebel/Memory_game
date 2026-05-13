@@ -5,6 +5,7 @@ import org.example.common.GameModel;
 import org.example.common.PlayerModel;
 
 public interface GameEventListener {
+    void onConnect(GameModel game, int index);
     void onInit(GameModel game);
     void onBoardStateChange(GameModel game);
     void onCardFlipped(GameModel game, int index);
