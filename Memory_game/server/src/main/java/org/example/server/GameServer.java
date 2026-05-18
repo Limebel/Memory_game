@@ -104,6 +104,13 @@ public class GameServer {
             public void onReconnection (GameModel game, PlayerModel player){
                 for (ClientHandler c : clients) {
                     if (c.getPlayer() == player) {
+                        int index=0;
+                        for(PlayerModel gamePlayer : game.getPlayers()){
+                            if (gamePlayer.equals(player)){
+                                c.send("Player " + index + " reconnected");
+                            }
+                            index++;
+                        }
                         sendStateAfterReconnection(game, c);
                         return;
                     }

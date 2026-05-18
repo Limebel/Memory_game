@@ -161,7 +161,7 @@ public class GameController {
         }
         else{
             game.setState(GameState.CHECKING);
-            handleChecking(player);
+            handleChecking();
         }
         return true;
     }
@@ -173,12 +173,12 @@ public class GameController {
      * Additionally, if players matched all cards the game proceeds
      * to finished state.
      * If cards do not match they are flipped back
-     * @param player The player that flipped the card
      */
-    private synchronized void handleChecking(PlayerModel player){
+    private synchronized void handleChecking(){
         CardModel card1 = game.getChosenCards().get(0);
         CardModel card2 = game.getChosenCards().get(1);
         if (card1.getValue().equals(card2.getValue())){
+            PlayerModel player = game.getPlayers().get(game.getCurrentPlayer());
             player.setScore(player.getScore()+1);
             System.out.println(player.getName() + "'s score is now " + player.getScore());
             //send information about score to clients
