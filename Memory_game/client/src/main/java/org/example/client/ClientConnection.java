@@ -137,6 +137,7 @@ public class ClientConnection {
                 } else if (index == 1) {
                     opponentName = parts[1];
                 } else System.out.println("Incorrect index");
+                frame.reloadStats();
                 System.out.println("Your opponent's name is " + opponentName);
             } catch (Exception e) {
                 System.out.println("State text not parsed fully");

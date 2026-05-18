@@ -147,12 +147,6 @@ public class GameServer {
             System.out.println("Client connected: " + clientSocket.getInetAddress());
 
             //If there are already 2 clients connected no new client can connect
-/*            if (clients.size() >= 2) {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println("Game is full already, cannot add another player");
-                clientSocket.close();
-                continue;
-            }*/
             ClientHandler handler = new ClientHandler(clientSocket, controller);
             clients.add(handler);
             new Thread(handler).start();
