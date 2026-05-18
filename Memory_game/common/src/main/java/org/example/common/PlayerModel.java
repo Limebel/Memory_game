@@ -10,13 +10,11 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class PlayerModel {
-    //private UUID id;
     private String name;
     private InetAddress adressIP;
     private Integer score=0;
     private boolean connected = true;
-    // temporary reconnect token
-    //private String reconnectId;
+
 
     @Override
     public boolean equals(Object obj) {

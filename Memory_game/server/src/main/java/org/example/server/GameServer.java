@@ -2,6 +2,7 @@ package org.example.server;
 
 import org.example.common.CardModel;
 import org.example.common.GameModel;
+import org.example.common.GameState;
 import org.example.common.PlayerModel;
 
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class GameServer {
                 //second player always chooses board size
                 PlayerModel secondPlayer = game.getPlayers().get(1);
                 for (ClientHandler c : clients) {
-                    if (c.getPlayer() == secondPlayer) {
+                    if (c.getPlayer().equals(secondPlayer)) {
                         c.send("SIZE CHOICE");
                         return;
                     }
@@ -250,13 +251,20 @@ public class GameServer {
     }
 
     private void sendStateAfterReconnection(GameModel game, ClientHandler client){
-        client.send(initMessage(game));
-        client.send(namesMessage(game));
-        client.send(boardStateMessage(game));
-        client.send(scoreMessage(game));
-        for(int i=0;i<game.getCards().size();i++){
-            if(game.getCards().get(i).getIfFlipped()){
-                client.send(cardFlippedMessage(game, i));
+        if(controller.getPreviousState()!= GameState.WAITING_FOR_PLAYERS) {
+            client.send(initMessage(game));
+            client.send(namesMessage(game));
+            client.send(boardStateMessage(game));
+            client.send(scoreMessage(game));
+            for (int i = 0; i < game.getCards().size(); i++) {
+                if (game.getCards().get(i).getIfFlipped()) {
+                    client.send(cardFlippedMessage(game, i));
+                }
+            }
+        }
+        else{
+            if(game.getPlayers().size()==2){
+                controller.getListener().onSizeChoice(game);
             }
         }
     }

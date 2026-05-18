@@ -67,7 +67,9 @@ public class GameController {
                         disconnectTask.cancel(false);
                     }
                     notifyOnReconnection(player);
-                    game.setState(previousState);
+                    if (game.getPlayers().stream().allMatch(PlayerModel::isConnected)) {
+                        game.setState(previousState);
+                    }
                     return;
                 }
             }
@@ -262,7 +264,7 @@ public class GameController {
      */
     public synchronized void handleDisconnect(PlayerModel player){
         player.setConnected(false);
-        previousState = game.getState();
+        if(game.getState()!=GameState.PAUSED){previousState = game.getState();}
         game.setState(GameState.PAUSED);
         notifyOnPlayerDisconnected(player);
 
