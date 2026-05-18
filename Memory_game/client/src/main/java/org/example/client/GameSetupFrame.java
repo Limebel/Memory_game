@@ -12,6 +12,7 @@ public class GameSetupFrame extends JFrame{
     private StartView startView;
     private OpponnetFindView opFindView;
     private BoardView boardView;
+    private FinishView finishView;
 
     private CardLayout cl;
     private JPanel main;
@@ -46,11 +47,15 @@ public class GameSetupFrame extends JFrame{
     }
 
     private void onBoardConfirm(CardLayout cl, JPanel main) {
-        boardView = new BoardView(connection/*, () -> cl.show(main, "START")*/, connection.getHeight(), connection.getWidth(), connection.getCards());
-        //TODO:Linia poniżej jest bardzo ważna (na żółto, żeby było widoczne
-        //connection.setListener(boardView::handleServerMessage);
+        boardView = new BoardView(connection, connection.getHeight(), connection.getWidth(), connection.getCards());
         main.add(boardView, "BOARD"); // add it dynamically
         cl.show(main, "BOARD");
+    }
+
+    public void showFinish(int variant) {
+        finishView = new FinishView(connection, variant);
+        main.add(finishView, "FINISH"); // added dynamically
+        cl.show(main, "FINISH");
     }
 
     public void goStart() {

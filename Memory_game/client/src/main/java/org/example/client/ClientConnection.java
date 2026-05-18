@@ -144,8 +144,20 @@ public class ClientConnection {
         }
         else if(msg.startsWith("WON")){
             try {
-                    //TODO: Implement game end behaviour
-                }catch(Exception e){
+                String[] parts = msg.split(":");
+                if(parts[1].equals("TIE")){
+                    frame.showFinish(2);
+                    System.out.println("It's a tie!");
+                }
+                else if(index==Integer.parseInt(parts[1])){
+                    frame.showFinish(0);
+                    System.out.println("You won");
+                }
+                else{
+                    frame.showFinish(1);
+                    System.out.println("Game finished");
+                }
+            }catch(Exception e){
                     System.out.println("Wrong won message received");
                 }
             }
