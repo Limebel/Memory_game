@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import static java.lang.Thread.sleep;
+
 @Setter
 @Getter
 public class ClientConnection {
@@ -28,6 +30,7 @@ public class ClientConnection {
     private int yourScore = 0;
     private int opponentScore = 0;
     private String opponentName = "";
+    private boolean boardReady = false;
 
     public ClientConnection(String host, int port){
         try {
@@ -68,7 +71,7 @@ public class ClientConnection {
         if(msg.startsWith("SIZE CHOICE")){
             SwingUtilities.invokeLater(frame::goSetup);
         }
-        if(msg.startsWith("Player")){
+        else if(msg.startsWith("Player")){
             String[] parts = msg.split(" ");
             index = Integer.parseInt(parts[1]);
         }
@@ -82,12 +85,19 @@ public class ClientConnection {
                 for (int i = 0; i < (height * width); i++) {
                     cards[i] = Integer.parseInt(cardsStr[i].trim());
                 }
-                frame.goBoard();
+                SwingUtilities.invokeAndWait(() -> {
+                    frame.goBoard();
+                    boardReady = true;
+                });
             } catch (Exception e) {
                 System.out.println("Init text not parsed correctly");
             }
         }
         else if(msg.startsWith("STATE")) {
+            if(!boardReady){
+                System.out.println("Board not initialized yet");
+                return;
+            }
             try {
                 String[] parts = msg.split(":");
                 height = Integer.parseInt(parts[1]);
@@ -133,6 +143,10 @@ public class ClientConnection {
             }
         }
         else if(msg.startsWith("FLIPPED")) {
+            if(!boardReady){
+                System.out.println("Board not initialized yet");
+                return;
+            }
             try {
                 String[] parts = msg.split(":");
                 int index = Integer.parseInt(parts[1]);

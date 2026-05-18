@@ -22,8 +22,8 @@ public class BoardView extends JPanel {
     private int rows;
     private int cols;
 
-    public BoardView(ClientConnection con, int rows, int cols, int[] pairings){
-        setLayout(new BorderLayout(10,10));
+    public BoardView(ClientConnection con, int rows, int cols, int[] pairings) {
+        setLayout(new BorderLayout(10, 10));
 
         // Game logic
         connection = con;
@@ -32,22 +32,19 @@ public class BoardView extends JPanel {
         statsPanel = new StatsPanel(connection);
         add(statsPanel, BorderLayout.NORTH);
 
-        SwingUtilities.invokeLater(() -> {
+        cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
+        cards = new ArrayList<>();
+        int numCards = rows * cols;
+        for (int i = 0; i < numCards; i++) {
+            Card card = new Card(i, pairings[i]);
+            card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
+            cards.add(card);
+            cardsPanel.add(card);
+        }
+        add(cardsPanel, BorderLayout.CENTER);
 
-            cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
-            cards = new ArrayList<>();
-            int numCards = rows*cols;
-            for(int i=0; i<numCards; i++) {
-                Card card = new Card(i, pairings[i]);
-                card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
-                cards.add(card);
-                cardsPanel.add(card);
-            }
-            add(cardsPanel, BorderLayout.CENTER);
-
-            // 🔥 tell server we're ready
-            connection.send("READY");
-        });
+        // 🔥 tell server we're ready
+        connection.send("READY");
     }
 
     public void handleServerMessage(String msg) {
