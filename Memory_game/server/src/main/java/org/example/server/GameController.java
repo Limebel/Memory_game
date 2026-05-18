@@ -75,9 +75,12 @@ public class GameController {
         if(game.getPlayers().size()<2){
             game.getPlayers().add(player);
             notifyOnConnect(game, game.getPlayers().size()-1);
+            if (game.getPlayers().size()==2) {
+                notifyOnSizeChoice();
+            }
         }
-        if (game.getPlayers().size()==2) {
-            notifyOnSizeChoice();
+        else{
+            notifyOnSendMessage("Game is full", player);
         }
     }
 
