@@ -1,7 +1,6 @@
 package org.example.client.view;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.example.client.ClientConnection;
 import org.example.common.GameModel;
 
@@ -9,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Main game screen

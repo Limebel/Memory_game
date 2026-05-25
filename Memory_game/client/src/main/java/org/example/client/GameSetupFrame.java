@@ -1,6 +1,5 @@
 package org.example.client;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.example.client.view.*;
 

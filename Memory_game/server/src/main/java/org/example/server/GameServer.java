@@ -1,12 +1,10 @@
 package org.example.server;
 
-import org.example.common.CardModel;
 import org.example.common.GameModel;
 import org.example.common.GameState;
 import org.example.common.PlayerModel;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;

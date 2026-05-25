@@ -1,6 +1,5 @@
 package org.example.server;
 
-import org.example.common.CardModel;
 import org.example.common.GameModel;
 import org.example.common.PlayerModel;
 

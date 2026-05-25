@@ -6,10 +6,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.function.Consumer;
-
-import static java.lang.Thread.sleep;
 
 @Setter
 @Getter

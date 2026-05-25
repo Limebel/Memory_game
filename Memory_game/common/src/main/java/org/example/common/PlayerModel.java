@@ -4,7 +4,6 @@ import lombok.*;
 
 import java.net.InetAddress;
 import java.util.Objects;
-import java.util.UUID;
 
 @Getter
 @Setter

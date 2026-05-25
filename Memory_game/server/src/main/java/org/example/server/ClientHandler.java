@@ -1,7 +1,6 @@
 package org.example.server;
 
 import lombok.Getter;
-import org.example.common.GameState;
 import org.example.common.PlayerModel;
 
 import java.io.*;
