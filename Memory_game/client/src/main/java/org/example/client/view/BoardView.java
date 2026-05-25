@@ -11,17 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Main game screen
+ */
 public class BoardView extends JPanel {
-    private StatsPanel statsPanel;
-    private JPanel cardsPanel;
-    private JPanel controlPanel;
+    private StatsPanel statsPanel; // line with scores display
+    private JPanel cardsPanel; // board with cards
 
     @Getter
     private List<Card> cards;
     private ClientConnection connection;
-    private int rows;
-    private int cols;
 
+    /**
+     * Creates the main game board view.
+     * Initializes the layout, stats panel, and card grid,
+     * and notifies the server that the client is ready.
+     *
+     * @param con      the client-server connection used for communication with the game server
+     * @param rows     number of rows in the card grid
+     * @param cols     number of columns in the card grid
+     * @param pairings array defining card pair relationships
+     */
     public BoardView(ClientConnection con, int rows, int cols, int[] pairings) {
         setLayout(new BorderLayout(10, 10));
 
@@ -47,28 +57,15 @@ public class BoardView extends JPanel {
         connection.send("READY");
     }
 
-    public void handleServerMessage(String msg) {
-
-        if (msg.startsWith("STATE")) {
-            // TODO: Update board state
-            //handleState(msg);
-        }
-
-        // TODO:Other messages handling
-    }
-
-    public Icon getCardFront(int index) {
-        return UIManager.getIcon("OptionPane.informationIcon"); // placeholder
-    }
-
-    public Icon getCardBack() {
-        return UIManager.getIcon("OptionPane.warningIcon"); // placeholder
-    }
-
     private void handleCardClick(Card card) {
         connection.send("FLIP:"+card.getId());
     }
 
+    /**
+     * Refreshes the statistics panel UI.
+     * This updates any displayed game-related values such as score, moves, or timers
+     * to match the current internal game state.
+     */
     public void refreshStats(){
         statsPanel.refresh();
     }
@@ -80,7 +77,13 @@ public class BoardView extends JPanel {
         private ClientConnection conn;
         Color highlight = new Color(255, 82, 140);
 
-
+        /**
+         * Creates the statistics panel that displays both players' scores.
+         * Initializes labels for the local player and the opponent using data from the server connection,
+         * applies styling (font, color, layout), and positions them on opposite sides of the panel.
+         *
+         * @param conn the client-server connection used to retrieve player names and scores
+         */
         public StatsPanel(ClientConnection conn) {
             this.conn = conn;
 
@@ -100,6 +103,10 @@ public class BoardView extends JPanel {
             add(opponentScoreLabel, BorderLayout.EAST);
         }
 
+        /**
+         * Updates the displayed scores for both the local player and the opponent.
+         * Pulls the latest values from the server connection and refreshes the UI labels.
+         */
         public void refresh() {
             yourScoreLabel.setText("You: " + conn.getYourScore());
             opponentScoreLabel.setText(conn.getOpponentName() + ": " + conn.getOpponentScore());

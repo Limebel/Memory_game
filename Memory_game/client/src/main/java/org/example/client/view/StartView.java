@@ -12,6 +12,13 @@ public class StartView extends JPanel {
     JButton start;
     ClientConnection connection;
 
+    /**
+     * Creates the start screen where the user enters a nickname and connects to the server.
+     * Displays an input field and a connect button, both triggering the start action.
+     *
+     * @param onStart     callback executed when the user attempts to connect
+     * @param connection  client-server connection used for game communication
+     */
     public StartView(Runnable onStart, ClientConnection connection) {
         this.connection = connection;
         setLayout(new GridBagLayout());

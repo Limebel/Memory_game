@@ -10,7 +10,15 @@ public class FinishView extends JPanel {
     JButton start;
     Color highlight = new Color(255, 82, 140);
 
-
+    /**
+     * Creates the final game screen view showing the result message.
+     * Displays a main title and subtitle depending on the game outcome
+     * (win, loss, or tie).
+     *
+     * @param conn         client connection used to retrieve opponent information
+     * @param textVariant  determines which result message to show:
+     *                     0 = win, 1 = loss, 2 = tie
+     */
     public FinishView(ClientConnection conn, int textVariant) {
         String text = "";
         String subtext = "";

@@ -3,7 +3,16 @@ package org.example.client.view;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Contains main color and style setup
+ */
 public class ColorManager {
+    /**
+     * Applies a custom dark theme using FlatLaf and overrides global UI colors.
+     * Configures base, highlight, light, and dark color palette and applies them
+     * to common Swing components such as labels, buttons, text fields, and sliders.
+     * Falls back to printing the stack trace if theme setup fails.
+     */
     public static void darkTheme(){
         try {
             // light theme (testing)

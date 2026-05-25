@@ -12,6 +12,14 @@ public class SetupView extends JPanel {
     private JButton confirmButton;
     private ClientConnection connection;
 
+    /**
+     * Creates the setup view where the user selects the game board size.
+     * Provides sliders for width (forced to even values) and height,
+     * and a confirm button to proceed with the selected configuration.
+     *
+     * @param onConfirm  callback triggered when the user confirms settings
+     * @param connection  client-server connection used later in the game flow
+     */
     public SetupView(Runnable onConfirm, ClientConnection connection) {
         this.connection = connection;
         setLayout(new GridBagLayout());
@@ -58,7 +66,6 @@ public class SetupView extends JPanel {
         connection.send("SIZE IS "+width+" "+height);
         GameModel.getInstance().setBoardWidth(width);
         GameModel.getInstance().setBoardHeight(height);
-        //onConfirm.run();
     }
 
 }

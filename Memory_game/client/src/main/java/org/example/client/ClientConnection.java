@@ -32,6 +32,14 @@ public class ClientConnection {
     private String opponentName = "";
     private boolean boardReady = false;
 
+    /**
+     * Creates a client connection to the specified server and port.
+     * Initializes input/output streams for communication and starts
+     * a background listener for incoming server messages.
+     *
+     * @param host server address to connect to
+     * @param port server port to connect to
+     */
     public ClientConnection(String host, int port){
         try {
             socket = new Socket(host, port);
@@ -46,6 +54,11 @@ public class ClientConnection {
         startListening();
     }
 
+    /**
+     * Sends a message to the server through the output stream.
+     *
+     * @param msg the message to send
+     */
     public void send(String msg) {
         out.println(msg);
     }
