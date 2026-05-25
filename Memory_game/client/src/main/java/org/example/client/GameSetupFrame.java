@@ -53,7 +53,7 @@ public class GameSetupFrame extends JFrame{
     }
 
     public void showFinish(int variant) {
-        finishView = new FinishView(connection, variant);
+        finishView = new FinishView(connection, variant, this);
         main.add(finishView, "FINISH"); // added dynamically
         cl.show(main, "FINISH");
     }

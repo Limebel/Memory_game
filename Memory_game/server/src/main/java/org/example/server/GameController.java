@@ -39,6 +39,8 @@ public class GameController {
     //Needed to properly reconnect
     private GameState previousState;
 
+    public int newGameCounter = 0;
+
     /**
      * Contructor for game controller
      * It sets game state into 'Waiting For Player'
@@ -55,7 +57,6 @@ public class GameController {
      */
     public synchronized void handleConnect(PlayerModel player){
         // reconnect case
-        //TODO: check if reconnection works
         for (PlayerModel p : game.getPlayers()) {
             if (p != null && p.getName().equals(player.getName())) {
                 //should trigger only if player is disconnected
@@ -91,12 +92,15 @@ public class GameController {
      * At the end client are notified to change their GUI
      */
     public synchronized void startGame(int width, int height){
+        System.out.println("Starting new game");
         game.setBoardHeight(height);
         game.setBoardWidth(width);
         initializeCards();
         game.setCurrentPlayer(0);
 
         //Change of game state to FIRST CARD is handled inside handleReady method
+
+        //TODO: FIX POTENTIAL ISSUES
 
         notifyInit();
     }
@@ -338,7 +342,7 @@ public class GameController {
     /**
      * Method to activate size choice message
      */
-    private synchronized void notifyOnSizeChoice(){
+    public synchronized void notifyOnSizeChoice(){
         if (listener != null){
             //player index is fixed set on 1 meaning second player will always choose size
             listener.onSizeChoice(game);
@@ -373,7 +377,7 @@ public class GameController {
     }
 
     /**
-     * Method to meesage player index
+     * Method to message player index
      */
     private synchronized void notifyOnConnect(GameModel game, int index){
         if (listener != null){

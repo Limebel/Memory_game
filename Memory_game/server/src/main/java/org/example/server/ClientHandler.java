@@ -95,6 +95,22 @@ public class ClientHandler implements Runnable{
                     }
                 }
 
+                else if (message.startsWith("NG")){
+                    try {
+                        int index = Integer.parseInt(message.split(":")[1]);
+                        index += 1;
+                        if(controller.newGameCounter==0){
+                            controller.newGameCounter += index;
+                        } else if ((controller.newGameCounter==1 && index==2) || (controller.newGameCounter==2 && index==1)) {
+                            newGame();
+                            controller.newGameCounter = 0;
+                        }
+                    }
+                    catch(Exception e){
+                        System.out.println("Invalid new game message: " + message);
+                    }
+                }
+
                 //In case of not recognizable message
                 else {
                     System.out.println("Incorrect message: " + message);
@@ -109,5 +125,11 @@ public class ClientHandler implements Runnable{
             //At the end if player disconnects socket is closed
             try { socket.close(); } catch (IOException ignored) {}
         }
+    }
+
+    public void newGame(){
+        System.out.println("New game starts");
+        controller.getGame().setState(GameState.FIRST_CARD);
+        controller.notifyOnSizeChoice();
     }
 }

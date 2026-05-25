@@ -34,10 +34,11 @@ public class BoardView extends JPanel {
 
         cardsPanel = new JPanel(new GridLayout(rows, cols, 5, 5));
         cards = new ArrayList<>();
+        for (Card c : cards){System.out.println("Card that should not be here");}
         int numCards = rows * cols;
         for (int i = 0; i < numCards; i++) {
             Card card = new Card(i, pairings[i]);
-            card.addActionListener(e -> handleCardClick(card)); //TODO CARD CLICK
+            card.addActionListener(e -> handleCardClick(card));
             cards.add(card);
             cardsPanel.add(card);
         }

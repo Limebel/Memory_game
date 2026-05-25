@@ -1,6 +1,10 @@
 package org.example.client.view;
 
 import org.example.client.ClientConnection;
+import org.example.client.GameSetupFrame;
+import org.example.common.GameModel;
+import org.example.common.GameState;
+import org.example.common.PlayerModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,9 +13,11 @@ public class FinishView extends JPanel {
     JTextField nameField;
     JButton start;
     Color highlight = new Color(255, 82, 140);
+    GameSetupFrame frame;
 
 
-    public FinishView(ClientConnection conn, int textVariant) {
+    public FinishView(ClientConnection conn, int textVariant, GameSetupFrame frame) {
+        this.frame = frame;
         String text = "";
         String subtext = "";
 
@@ -49,14 +55,16 @@ public class FinishView extends JPanel {
         gbc.gridy = 1;
         add(sublabel, gbc);
 
-        /*
         start = new JButton("New game");
-        start.setFont(bigFont);
+        start.setFont(smallFont);
         start.setPreferredSize(new Dimension(300, 70));
         gbc.gridy = 3;
-        add(start, gbc);*/
+        add(start, gbc);
 
-        //start.addActionListener(e -> submit(onStart));
+        start.addActionListener(e -> submit(conn));
     }
-    // Can add function to start new game here with the button above
+    private void submit(ClientConnection conn) {
+        conn.send("NG:"+conn.getIndex());
+        frame.goWait();
+    }
 }
